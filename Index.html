@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>API Connectivity Spike</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-900">
+  <main
+    x-data="connectivityApp()"
+    class="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-4 py-8"
+  >
+    <section class="w-full rounded-2xl bg-white p-6 shadow-lg">
+      <div class="mb-6 flex items-start gap-3">
+        <div class="rounded-xl bg-blue-100 p-3 text-blue-700">
+          <i data-lucide="radio"></i>
+        </div>
+
+        <div>
+          <h1 class="text-2xl font-bold">API Connectivity Spike</h1>
+          <p class="mt-1 text-sm text-slate-500">
+            Phase 0 untuk memastikan frontend dapat terhubung ke Code.gs.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="mb-6 rounded-xl border p-4"
+        :class="statusClass"
+      >
+        <div class="flex items-center gap-2">
+          <i :data-lucide="statusIcon"></i>
+          <span class="font-semibold" x-text="statusTitle"></span>
+        </div>
+
+        <p class="mt-2 text-sm" x-text="statusMessage"></p>
+      </div>
+
+      <button
+        type="button"
+        @click="testConnection()"
+        :disabled="loading"
+        class="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span
+          x-show="loading"
+          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+        ></span>
+
+        <i x-show="!loading" data-lucide="plug-zap"></i>
+
+        <span x-text="loading ? 'Menghubungkan...' : 'Test API Connection'"></span>
+      </button>
+
+      <div
+        x-show="response"
+        x-cloak
+        class="mt-6 rounded-xl bg-slate-950 p-4 text-sm text-green-300"
+      >
+        <div class="mb-2 flex items-center gap-2 text-slate-300">
+          <i data-lucide="code-2"></i>
+          <span class="font-semibold">Response</span>
+        </div>
+
+        <pre class="overflow-x-auto whitespace-pre-wrap" x-text="response"></pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyChu8LCm4Y_HI9yPuHJiZMDq2yl6hFoQvHBTC3FpQIgKLPdFtinvpY7pvB9xaZryE/exec';
+
+    function connectivityApp() {
+      return {
+        loading: false,
+        response: '',
+        status: 'idle',
+
+        get statusClass() {
+          if (this.status === 'success') {
+            return 'border-green-200 bg-green-50 text-green-800';
+          }
+
+          if (this.status === 'error') {
+            return 'border-red-200 bg-red-50 text-red-800';
+          }
+
+          return 'border-slate-200 bg-slate-50 text-slate-700';
+        },
+
+        get statusIcon() {
+          if (this.status === 'success') {
+            return 'check-circle-2';
+          }
+
+          if (this.status === 'error') {
+            return 'circle-x';
+          }
+
+          return 'info';
+        },
+
+        get statusTitle() {
+          if (this.status === 'success') {
+            return 'Connection berhasil';
+          }
+
+          if (this.status === 'error') {
+            return 'Connection gagal';
+          }
+
+          return 'Belum diuji';
+        },
+
+        get statusMessage() {
+          if (this.status === 'success') {
+            return 'Frontend berhasil menerima response JSON dari Code.gs.';
+          }
+
+          if (this.status === 'error') {
+            return 'Periksa deployment, permission, URL script, atau response server.';
+          }
+
+          return 'Klik tombol untuk menguji koneksi API.';
+        },
+
+        async testConnection() {
+          this.loading = true;
+          this.response = '';
+          this.status = 'idle';
+
+          try {
+            var fetchResponse = await fetch(SCRIPT_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+              },
+              body: JSON.stringify({
+                action: 'ping',
+                payload: {
+                  source: 'phase-0-frontend'
+                }
+              })
+            });
+
+            var responseText = await fetchResponse.text();
+            var result = JSON.parse(responseText);
+
+            if (!result.ok) {
+              throw new Error(result.message || 'API returned an error');
+            }
+
+            this.status = 'success';
+            this.response = JSON.stringify(result, null, 2);
+          } catch (error) {
+            this.status = 'error';
+            this.response = JSON.stringify({
+              ok: false,
+              message: error.message
+            }, null, 2);
+          } finally {
+            this.loading = false;
+
+            this.$nextTick(function() {
+              lucide.createIcons();
+            });
+          }
+        }
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
