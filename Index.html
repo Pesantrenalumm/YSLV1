@@ -3,181 +3,282 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>API Connectivity Spike</title>
-
+  <title>YBM Super League 2026 — Phase 0 Integration Test</title>
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Alpine.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
 </head>
-
-<body class="min-h-screen bg-slate-100 text-slate-900">
-  <main
-    x-data="connectivityApp()"
-    class="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-4 py-8"
-  >
-    <section class="w-full rounded-2xl bg-white p-6 shadow-lg">
-      <div class="mb-6 flex items-start gap-3">
-        <div class="rounded-xl bg-blue-100 p-3 text-blue-700">
-          <i data-lucide="radio"></i>
-        </div>
-
-        <div>
-          <h1 class="text-2xl font-bold">API Connectivity Spike</h1>
-          <p class="mt-1 text-sm text-slate-500">
-            Phase 0 untuk memastikan frontend dapat terhubung ke Code.gs.
-          </p>
-        </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
+  
+  <div x-data="phaseZeroApp()" x-init="initApp()" class="max-w-4xl mx-auto space-y-6">
+    
+    <!-- Header -->
+    <header class="border-b border-slate-700 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-emerald-400 flex items-center gap-2">
+          <i data-lucide="trophy" class="w-7 h-7 text-emerald-400"></i>
+          YBM Super League 2026
+        </h1>
+        <p class="text-xs text-slate-400 mt-1">Phase 0 — Integration Spike & Database Initializer</p>
       </div>
-
-      <div
-        class="mb-6 rounded-xl border p-4"
-        :class="statusClass"
-      >
-        <div class="flex items-center gap-2">
-          <i :data-lucide="statusIcon"></i>
-          <span class="font-semibold" x-text="statusTitle"></span>
-        </div>
-
-        <p class="mt-2 text-sm" x-text="statusMessage"></p>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          GAS REST API Ready
+        </span>
       </div>
+    </header>
 
-      <button
-        type="button"
-        @click="testConnection()"
-        :disabled="loading"
-        class="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <span
-          x-show="loading"
-          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
-        ></span>
-
-        <i x-show="!loading" data-lucide="plug-zap"></i>
-
-        <span x-text="loading ? 'Menghubungkan...' : 'Test API Connection'"></span>
-      </button>
-
-      <div
-        x-show="response"
-        x-cloak
-        class="mt-6 rounded-xl bg-slate-950 p-4 text-sm text-green-300"
-      >
-        <div class="mb-2 flex items-center gap-2 text-slate-300">
-          <i data-lucide="code-2"></i>
-          <span class="font-semibold">Response</span>
+    <!-- System Status & Session Card -->
+    <section class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-lg space-y-3">
+      <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Status Sesi Backend
+        </span>
+        <button @click="logout()" x-show="sessionToken" class="text-xs text-rose-400 hover:text-rose-300 font-medium hover:underline flex items-center gap-1">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Logout
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-1">
+        <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
+          <span class="text-slate-400 text-xs block mb-1">Role Terautentikasi:</span>
+          <span class="font-bold text-amber-400 text-base flex items-center gap-2" x-text="sessionRole || 'Public (Belum Login)'"></span>
         </div>
-
-        <pre class="overflow-x-auto whitespace-pre-wrap" x-text="response"></pre>
+        <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 overflow-hidden">
+          <span class="text-slate-400 text-xs block mb-1">Session Token:</span>
+          <span class="font-mono text-xs text-slate-300 truncate block" x-text="sessionToken || 'Tidak ada token'"></span>
+        </div>
       </div>
     </section>
-  </main>
+
+    <!-- Test Controls Grid -->
+    <main class="grid gap-5 md:grid-cols-2">
+      
+      <!-- 1. Public Test -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between shadow-md">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="p-2 bg-sky-950/80 border border-sky-800 rounded-lg text-sky-400">
+              <i data-lucide="globe" class="w-5 h-5"></i>
+            </div>
+            <h2 class="font-bold text-slate-200">1. Public API Call</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Menguji pemanggilan endpoint publik tanpa membutuhkan session token (Public Bootstrap).</p>
+        </div>
+        <button @click="runPublicTest()" :disabled="loading" class="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-sky-950">
+          <span x-show="loadingAction === 'publicTest'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <i x-show="loadingAction !== 'publicTest'" data-lucide="send" class="w-4 h-4"></i>
+          <span>Test Public Bootstrap</span>
+        </button>
+      </div>
+
+      <!-- 2. Database Initializer -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between shadow-md">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="p-2 bg-emerald-950/80 border border-emerald-800 rounded-lg text-emerald-400">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <h2 class="font-bold text-slate-200">2. Setup Database</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Membuat dan memperbarui 10 tabel Google Sheets sesuai skema PRD V2 YBM Super League.</p>
+        </div>
+        <button @click="runSetupDatabase()" :disabled="loading" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950">
+          <span x-show="loadingAction === 'setupDatabase'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <i x-show="loadingAction !== 'setupDatabase'" data-lucide="wrench" class="w-4 h-4"></i>
+          <span>Initialize 10 Sheets Schema</span>
+        </button>
+      </div>
+
+      <!-- 3. Authentication & Protected Test -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between md:col-span-2 shadow-md space-y-5">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="p-2 bg-amber-950/80 border border-amber-800 rounded-lg text-amber-400">
+              <i data-lucide="key-round" class="w-5 h-5"></i>
+            </div>
+            <h2 class="font-bold text-slate-200">3. Authentication & Protected Action Test</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            Uji verifikasi password backend & pembuatan UUID token. <br>
+            <span class="text-slate-300 font-mono">Password: Runner (1221) | Admin (8448) | Superadmin (Y5L2627)</span>
+          </p>
+          
+          <form @submit.prevent="runLoginTest()" class="flex flex-col sm:flex-row gap-2">
+            <input type="password" x-model="loginInput" placeholder="Masukkan password role..." class="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+            <button type="submit" :disabled="loading || !loginInput" class="py-2.5 px-6 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-amber-950">
+              <span x-show="loadingAction === 'login'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <i x-show="loadingAction !== 'login'" data-lucide="lock" class="w-4 h-4"></i>
+              <span>Login System</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="border-t border-slate-700/60 pt-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i> Protected Action Call
+            </span>
+            <span class="text-[11px] text-slate-400">Validasi Token & Access Role</span>
+          </div>
+          <button @click="runProtectedTest()" :disabled="loading || !sessionToken" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-950">
+            <span x-show="loadingAction === 'protectedTest'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <i x-show="loadingAction !== 'protectedTest'" data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Test Protected Action (Mengirim Session Token)</span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Response Output Console -->
+    <section class="bg-slate-950 rounded-xl p-4 border border-slate-800 space-y-2 shadow-inner">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <span class="text-xs font-mono uppercase text-slate-400 flex items-center gap-1.5">
+          <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> JSON Output Inspector
+        </span>
+        <button @click="lastResponse = null" class="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3 h-3"></i> Clear Console
+        </button>
+      </div>
+      
+      <!-- Skeleton Loading View for JSON Output -->
+      <template x-if="loading">
+        <div class="p-4 space-y-2 animate-pulse">
+          <div class="h-4 bg-slate-800 rounded w-1/4"></div>
+          <div class="h-4 bg-slate-800 rounded w-1/2"></div>
+          <div class="h-4 bg-slate-800 rounded w-1/3"></div>
+        </div>
+      </template>
+
+      <pre x-show="!loading" class="text-xs font-mono p-3 bg-slate-900/90 rounded-lg overflow-x-auto text-emerald-400 min-h-[140px] max-h-[300px] leading-relaxed" x-text="lastResponse ? JSON.stringify(lastResponse, null, 2) : '// Menunggu respon dari server GAS...'"></pre>
+    </section>
+
+    <!-- Custom Modal Dialog (Replaces Browser Alert) -->
+    <div x-show="modal.show" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
+      <div @click.away="modal.show = false" class="bg-slate-800 rounded-xl border border-slate-700 max-w-sm w-full p-5 space-y-4 shadow-2xl transform transition-all">
+        <div class="flex items-center gap-2 text-amber-400">
+          <i data-lucide="info" class="w-5 h-5"></i>
+          <h3 class="font-bold text-slate-100" x-text="modal.title"></h3>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed" x-text="modal.message"></p>
+        <button @click="modal.show = false" class="w-full py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-semibold transition">Tutup</button>
+      </div>
+    </div>
+
+  </div>
 
   <script>
-    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWoq33u3fjKwwCx8PEONXjXjxykWtj8RQmkxUwm4g0TWUYrVL2xugBA4KXJJBfWCvN/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec';
 
-    function connectivityApp() {
+    function phaseZeroApp() {
       return {
         loading: false,
-        response: '',
-        status: 'idle',
+        loadingAction: '',
+        loginInput: '',
+        sessionRole: sessionStorage.getItem('ybm_role') || '',
+        sessionToken: sessionStorage.getItem('ybm_token') || '',
+        lastResponse: null,
+        modal: { show: false, title: '', message: '' },
 
-        get statusClass() {
-          if (this.status === 'success') {
-            return 'border-green-200 bg-green-50 text-green-800';
-          }
-
-          if (this.status === 'error') {
-            return 'border-red-200 bg-red-50 text-red-800';
-          }
-
-          return 'border-slate-200 bg-slate-50 text-slate-700';
+        initApp() {
+          this.$nextTick(() => {
+            if (window.lucide) {
+              lucide.createIcons();
+            }
+          });
         },
 
-        get statusIcon() {
-          if (this.status === 'success') {
-            return 'check-circle-2';
-          }
-
-          if (this.status === 'error') {
-            return 'circle-x';
-          }
-
-          return 'info';
+        showAlert(title, message) {
+          this.modal = { show: true, title: title, message: message };
         },
 
-        get statusTitle() {
-          if (this.status === 'success') {
-            return 'Connection berhasil';
-          }
-
-          if (this.status === 'error') {
-            return 'Connection gagal';
-          }
-
-          return 'Belum diuji';
+        logout() {
+          sessionStorage.removeItem('ybm_role');
+          sessionStorage.removeItem('ybm_token');
+          this.sessionRole = '';
+          this.sessionToken = '';
+          this.lastResponse = { ok: true, data: { message: 'Sesi lokal berhasil dibersihkan.' } };
         },
 
-        get statusMessage() {
-          if (this.status === 'success') {
-            return 'Frontend berhasil menerima response JSON dari Code.gs.';
-          }
-
-          if (this.status === 'error') {
-            return 'Periksa deployment, permission, URL script, atau response server.';
-          }
-
-          return 'Klik tombol untuk menguji koneksi API.';
-        },
-
-        async testConnection() {
+        async callApi(action, payload = {}) {
           this.loading = true;
-          this.response = '';
-          this.status = 'idle';
-
+          this.loadingAction = action;
           try {
-            var fetchResponse = await fetch(SCRIPT_URL, {
+            const reqBody = {
+              action: action,
+              token: this.sessionToken,
+              payload: payload
+            };
+            
+            const response = await fetch(SCRIPT_URL, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-              },
-              body: JSON.stringify({
-                action: 'ping',
-                payload: {
-                  source: 'phase-0-frontend'
-                }
-              })
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify(reqBody)
             });
 
-            var responseText = await fetchResponse.text();
-            var result = JSON.parse(responseText);
+            const rawText = await response.text();
+            const json = JSON.parse(rawText);
+            this.lastResponse = json;
 
-            if (!result.ok) {
-              throw new Error(result.message || 'API returned an error');
+            if (!json.ok) {
+              this.showAlert('Peringatan Backend', json.message || 'Terjadi kesalahan pada backend.');
             }
 
-            this.status = 'success';
-            this.response = JSON.stringify(result, null, 2);
-          } catch (error) {
-            this.status = 'error';
-            this.response = JSON.stringify({
-              ok: false,
-              message: error.message
-            }, null, 2);
+            return json;
+          } catch (err) {
+            const errObj = { ok: false, message: 'Gagal komunikasi jaringan: ' + err.message };
+            this.lastResponse = errObj;
+            this.showAlert('Kesalahan Koneksi', errObj.message);
+            return errObj;
           } finally {
             this.loading = false;
-
-            this.$nextTick(function() {
-              lucide.createIcons();
+            this.loadingAction = '';
+            this.$nextTick(() => {
+              if (window.lucide) lucide.createIcons();
             });
           }
-        }
-      };
-    }
+        },
 
-    document.addEventListener('DOMContentLoaded', function() {
-      lucide.createIcons();
-    });
+        async runPublicTest() {
+          await this.callApi('publicTest');
+        },
+
+        async runSetupDatabase() {
+          const res = await this.callApi('setupDatabase');
+          if (res.ok) {
+            this.showAlert('Database Inisialisasi', 'Database 10 tabel berhasil disiapkan di Google Sheet!');
+          }
+        },
+
+        async runLoginTest() {
+          const res = await this.callApi('login', { password: this.loginInput });
+          if (res.ok && res.data) {
+            this.sessionRole = res.data.role;
+            this.sessionToken = res.data.token;
+            sessionStorage.setItem('ybm_role', res.data.role);
+            sessionStorage.setItem('ybm_token', res.data.token);
+            this.loginInput = '';
+            this.showAlert('Login Berhasil', 'Login sukses sebagai role: ' + res.data.role);
+          }
+        },
+
+        async runProtectedTest() {
+          await this.callApi('protectedTest');
+        }
+      }
+    }
   </script>
 </body>
 </html>
