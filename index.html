@@ -2,283 +2,3427 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YBM Super League 2026 — Phase 0 Integration Test</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  >
+  <meta
+    name="description"
+    content="Website resmi YBM Super League 2026"
+  >
+  <meta name="theme-color" content="#020617">
+  <title>YBM Super League 2026</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Alpine.js CDN -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    [x-cloak] { display: none !important; }
+    [hidden] {
+      display: none !important;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 9999px;
+      animation: spin 700ms linear infinite;
+    }
+
+    .fade-in {
+      animation: fadeIn 200ms ease-out;
+    }
+
+    .route-enter {
+      animation: routeEnter 200ms ease-out;
+    }
+
+    .modal-panel {
+      animation: modalScale 180ms ease-out;
+    }
+
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: #1e293b;
+    }
+
+    .skeleton::after {
+      position: absolute;
+      inset: 0;
+      content: '';
+      transform: translateX(-100%);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(148, 163, 184, 0.12),
+        transparent
+      );
+      animation: skeletonSweep 1.4s infinite;
+    }
+
+    .public-nav-link {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition:
+        color 180ms ease,
+        background-color 180ms ease;
+    }
+
+    .public-nav-link:hover {
+      background: rgba(30, 41, 59, 0.8);
+      color: #f8fafc;
+    }
+
+    .public-nav-link.is-active {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      gap: 0.75rem;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      transition:
+        color 180ms ease,
+        background-color 180ms ease;
+    }
+
+    .mobile-nav-link:hover,
+    .mobile-nav-link.is-active {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+    }
+
+    .public-card {
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.82);
+      box-shadow: 0 18px 45px rgba(2, 6, 23, 0.18);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes routeEnter {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes modalScale {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes skeletonSweep {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+      }
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
-  
-  <div x-data="phaseZeroApp()" x-init="initApp()" class="max-w-4xl mx-auto space-y-6">
-    
-    <!-- Header -->
-    <header class="border-b border-slate-700 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-emerald-400 flex items-center gap-2">
-          <i data-lucide="trophy" class="w-7 h-7 text-emerald-400"></i>
-          YBM Super League 2026
-        </h1>
-        <p class="text-xs text-slate-400 mt-1">Phase 0 — Integration Spike & Database Initializer</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          GAS REST API Ready
-        </span>
-      </div>
-    </header>
 
-    <!-- System Status & Session Card -->
-    <section class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-lg space-y-3">
-      <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Status Sesi Backend
-        </span>
-        <button @click="logout()" x-show="sessionToken" class="text-xs text-rose-400 hover:text-rose-300 font-medium hover:underline flex items-center gap-1">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Logout
-        </button>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-1">
-        <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
-          <span class="text-slate-400 text-xs block mb-1">Role Terautentikasi:</span>
-          <span class="font-bold text-amber-400 text-base flex items-center gap-2" x-text="sessionRole || 'Public (Belum Login)'"></span>
-        </div>
-        <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 overflow-hidden">
-          <span class="text-slate-400 text-xs block mb-1">Session Token:</span>
-          <span class="font-mono text-xs text-slate-300 truncate block" x-text="sessionToken || 'Tidak ada token'"></span>
-        </div>
-      </div>
-    </section>
+<body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+  <div
+    id="toast"
+    class="fixed right-4 top-4 z-50 hidden max-w-sm rounded-xl border px-4 py-3 shadow-2xl"
+    role="status"
+    aria-live="polite"
+  ></div>
 
-    <!-- Test Controls Grid -->
-    <main class="grid gap-5 md:grid-cols-2">
-      
-      <!-- 1. Public Test -->
-      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between shadow-md">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <div class="p-2 bg-sky-950/80 border border-sky-800 rounded-lg text-sky-400">
-              <i data-lucide="globe" class="w-5 h-5"></i>
-            </div>
-            <h2 class="font-bold text-slate-200">1. Public API Call</h2>
-          </div>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">Menguji pemanggilan endpoint publik tanpa membutuhkan session token (Public Bootstrap).</p>
-        </div>
-        <button @click="runPublicTest()" :disabled="loading" class="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-sky-950">
-          <span x-show="loadingAction === 'publicTest'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          <i x-show="loadingAction !== 'publicTest'" data-lucide="send" class="w-4 h-4"></i>
-          <span>Test Public Bootstrap</span>
-        </button>
-      </div>
+  <div id="publicApp" class="min-h-screen">
+    <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
+      <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <a
+          href="#/home"
+          class="flex min-w-0 items-center gap-3"
+          aria-label="YBM Super League 2026 Home"
+        >
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-slate-950">
+            <i data-lucide="trophy" class="h-5 w-5"></i>
+          </span>
 
-      <!-- 2. Database Initializer -->
-      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between shadow-md">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <div class="p-2 bg-emerald-950/80 border border-emerald-800 rounded-lg text-emerald-400">
-              <i data-lucide="database" class="w-5 h-5"></i>
-            </div>
-            <h2 class="font-bold text-slate-200">2. Setup Database</h2>
-          </div>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">Membuat dan memperbarui 10 tabel Google Sheets sesuai skema PRD V2 YBM Super League.</p>
-        </div>
-        <button @click="runSetupDatabase()" :disabled="loading" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950">
-          <span x-show="loadingAction === 'setupDatabase'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          <i x-show="loadingAction !== 'setupDatabase'" data-lucide="wrench" class="w-4 h-4"></i>
-          <span>Initialize 10 Sheets Schema</span>
-        </button>
-      </div>
-
-      <!-- 3. Authentication & Protected Test -->
-      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex flex-col justify-between md:col-span-2 shadow-md space-y-5">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <div class="p-2 bg-amber-950/80 border border-amber-800 rounded-lg text-amber-400">
-              <i data-lucide="key-round" class="w-5 h-5"></i>
-            </div>
-            <h2 class="font-bold text-slate-200">3. Authentication & Protected Action Test</h2>
-          </div>
-          <p class="text-xs text-slate-400 leading-relaxed mb-3">
-            Uji verifikasi password backend & pembuatan UUID token. <br>
-            <span class="text-slate-300 font-mono">Password: Runner (1221) | Admin (8448) | Superadmin (Y5L2627)</span>
-          </p>
-          
-          <form @submit.prevent="runLoginTest()" class="flex flex-col sm:flex-row gap-2">
-            <input type="password" x-model="loginInput" placeholder="Masukkan password role..." class="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-            <button type="submit" :disabled="loading || !loginInput" class="py-2.5 px-6 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-amber-950">
-              <span x-show="loadingAction === 'login'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              <i x-show="loadingAction !== 'login'" data-lucide="lock" class="w-4 h-4"></i>
-              <span>Login System</span>
-            </button>
-          </form>
-        </div>
-
-        <div class="border-t border-slate-700/60 pt-4">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i> Protected Action Call
+          <span class="min-w-0">
+            <span class="block truncate font-bold tracking-tight">
+              YBM Super League
             </span>
-            <span class="text-[11px] text-slate-400">Validasi Token & Access Role</span>
-          </div>
-          <button @click="runProtectedTest()" :disabled="loading || !sessionToken" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-950">
-            <span x-show="loadingAction === 'protectedTest'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            <i x-show="loadingAction !== 'protectedTest'" data-lucide="shield-check" class="w-4 h-4"></i>
-            <span>Test Protected Action (Mengirim Session Token)</span>
+            <span class="block text-xs font-medium text-slate-500">
+              Season 2026
+            </span>
+          </span>
+        </a>
+
+        <nav
+          id="desktopNavigation"
+          class="hidden items-center gap-1 lg:flex"
+          aria-label="Navigasi utama"
+        >
+          <a href="#/home" class="public-nav-link" data-route-link="home">
+            Home
+          </a>
+          <a href="#/standings" class="public-nav-link" data-route-link="standings">
+            Klasemen
+          </a>
+          <a href="#/schedule" class="public-nav-link" data-route-link="schedule">
+            Jadwal
+          </a>
+          <a href="#/results" class="public-nav-link" data-route-link="results">
+            Hasil
+          </a>
+          <a href="#/teams" class="public-nav-link" data-route-link="teams">
+            Tim
+          </a>
+          <a href="#/statistics" class="public-nav-link" data-route-link="statistics">
+            Statistik
+          </a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <button
+            id="apiStatusButton"
+            type="button"
+            class="hidden min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 px-3 text-sm font-semibold text-slate-300 transition hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-60 sm:flex"
+          >
+            <span
+              id="apiStatusIndicator"
+              class="h-2.5 w-2.5 rounded-full bg-slate-600"
+            ></span>
+            <span class="button-label">Periksa API</span>
+          </button>
+
+          <button
+            id="mobileMenuButton"
+            type="button"
+            class="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 text-slate-300 transition hover:bg-slate-800 lg:hidden"
+            aria-label="Buka navigasi"
+            aria-controls="mobileNavigation"
+            aria-expanded="false"
+          >
+            <i data-lucide="menu" class="mobile-menu-icon h-5 w-5"></i>
           </button>
         </div>
       </div>
 
-    </main>
-
-    <!-- Response Output Console -->
-    <section class="bg-slate-950 rounded-xl p-4 border border-slate-800 space-y-2 shadow-inner">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <span class="text-xs font-mono uppercase text-slate-400 flex items-center gap-1.5">
-          <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> JSON Output Inspector
-        </span>
-        <button @click="lastResponse = null" class="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1">
-          <i data-lucide="trash-2" class="w-3 h-3"></i> Clear Console
-        </button>
-      </div>
-      
-      <!-- Skeleton Loading View for JSON Output -->
-      <template x-if="loading">
-        <div class="p-4 space-y-2 animate-pulse">
-          <div class="h-4 bg-slate-800 rounded w-1/4"></div>
-          <div class="h-4 bg-slate-800 rounded w-1/2"></div>
-          <div class="h-4 bg-slate-800 rounded w-1/3"></div>
+      <nav
+        id="mobileNavigation"
+        class="hidden border-t border-slate-800 bg-slate-950 px-4 py-3 lg:hidden"
+        aria-label="Navigasi mobile"
+      >
+        <div class="mx-auto grid max-w-7xl gap-1 sm:grid-cols-2">
+          <a href="#/home" class="mobile-nav-link" data-route-link="home">
+            <i data-lucide="house" class="h-5 w-5"></i>
+            Home
+          </a>
+          <a href="#/standings" class="mobile-nav-link" data-route-link="standings">
+            <i data-lucide="table-2" class="h-5 w-5"></i>
+            Klasemen
+          </a>
+          <a href="#/schedule" class="mobile-nav-link" data-route-link="schedule">
+            <i data-lucide="calendar-days" class="h-5 w-5"></i>
+            Jadwal
+          </a>
+          <a href="#/results" class="mobile-nav-link" data-route-link="results">
+            <i data-lucide="list-checks" class="h-5 w-5"></i>
+            Hasil
+          </a>
+          <a href="#/teams" class="mobile-nav-link" data-route-link="teams">
+            <i data-lucide="shield" class="h-5 w-5"></i>
+            Tim
+          </a>
+          <a href="#/statistics" class="mobile-nav-link" data-route-link="statistics">
+            <i data-lucide="chart-no-axes-column-increasing" class="h-5 w-5"></i>
+            Statistik
+          </a>
         </div>
-      </template>
+      </nav>
+    </header>
 
-      <pre x-show="!loading" class="text-xs font-mono p-3 bg-slate-900/90 rounded-lg overflow-x-auto text-emerald-400 min-h-[140px] max-h-[300px] leading-relaxed" x-text="lastResponse ? JSON.stringify(lastResponse, null, 2) : '// Menunggu respon dari server GAS...'"></pre>
-    </section>
+    <main
+      id="publicView"
+      class="mx-auto min-h-[calc(100vh-9rem)] max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10"
+      aria-live="polite"
+    ></main>
 
-    <!-- Custom Modal Dialog (Replaces Browser Alert) -->
-    <div x-show="modal.show" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
-      <div @click.away="modal.show = false" class="bg-slate-800 rounded-xl border border-slate-700 max-w-sm w-full p-5 space-y-4 shadow-2xl transform transition-all">
-        <div class="flex items-center gap-2 text-amber-400">
-          <i data-lucide="info" class="w-5 h-5"></i>
-          <h3 class="font-bold text-slate-100" x-text="modal.title"></h3>
+    <footer class="border-t border-slate-800 bg-slate-950">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <p>
+          YBM Super League 2026
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <button
+            id="footerApiStatusButton"
+            type="button"
+            class="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-emerald-300"
+          >
+            <i data-lucide="activity" class="button-icon h-4 w-4"></i>
+            <span class="button-label">Status layanan</span>
+          </button>
+
+          <a
+            href="#/login"
+            class="inline-flex min-h-11 items-center rounded-xl px-2 font-semibold text-slate-500 transition hover:bg-slate-900 hover:text-slate-300"
+          >
+            Login internal
+          </a>
         </div>
-        <p class="text-sm text-slate-300 leading-relaxed" x-text="modal.message"></p>
-        <button @click="modal.show = false" class="w-full py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-semibold transition">Tutup</button>
       </div>
-    </div>
-
+    </footer>
   </div>
 
+  <div
+    id="globalModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="globalModalTitle"
+  >
+    <div class="modal-panel w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 id="globalModalTitle" class="text-xl font-bold">
+            Informasi
+          </h2>
+          <p
+            id="globalModalMessage"
+            class="mt-2 text-sm leading-6 text-slate-400"
+          ></p>
+        </div>
+
+        <button
+          id="globalModalCloseButton"
+          type="button"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-800 hover:text-white"
+          aria-label="Tutup dialog"
+        >
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button
+          id="globalModalActionButton"
+          type="button"
+          class="min-h-11 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="hidden mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <header class="mb-8">
+      <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
+        <i data-lucide="radio-tower" class="h-4 w-4"></i>
+        Integration Spike
+      </div>
+
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        YBM Super League 2026
+      </h1>
+
+      <p class="mt-3 max-w-2xl text-slate-400">
+        Phase 0 menguji koneksi public API, login, session token, dan protected
+        API antara frontend eksternal dan Google Apps Script.
+      </p>
+    </header>
+
+    <section class="grid gap-5 lg:grid-cols-3">
+      <article class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-emerald-400">Langkah 1</p>
+            <h2 class="mt-1 text-xl font-semibold">Public API</h2>
+          </div>
+
+          <i data-lucide="globe-2" class="h-6 w-6 text-slate-500"></i>
+        </div>
+
+        <p class="mb-5 text-sm leading-6 text-slate-400">
+          Menguji POST publik dan koneksi backend ke Google Sheets.
+        </p>
+
+        <button
+          id="publicTestButton"
+          type="button"
+          class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="plug-zap" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Jalankan Public Test</span>
+        </button>
+
+        <div
+          id="publicResult"
+          class="mt-4 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+        ></div>
+      </article>
+
+      <article class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-sky-400">Langkah 2</p>
+            <h2 class="mt-1 text-xl font-semibold">Login</h2>
+          </div>
+
+          <i data-lucide="key-round" class="h-6 w-6 text-slate-500"></i>
+        </div>
+
+        <form id="loginForm">
+          <label
+            for="password"
+            class="mb-2 block text-sm font-medium text-slate-300"
+          >
+            Password
+          </label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+            placeholder="Masukkan password"
+          >
+
+          <button
+            id="loginButton"
+            type="submit"
+            class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <i data-lucide="log-in" class="button-icon h-5 w-5"></i>
+            <span class="button-label">Login</span>
+          </button>
+        </form>
+
+        <div
+          id="loginResult"
+          class="mt-4 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+        ></div>
+      </article>
+
+      <article class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-violet-400">Langkah 3</p>
+            <h2 class="mt-1 text-xl font-semibold">Protected API</h2>
+          </div>
+
+          <i data-lucide="shield-check" class="h-6 w-6 text-slate-500"></i>
+        </div>
+
+        <p class="mb-5 text-sm leading-6 text-slate-400">
+          Mengirim session token dan memvalidasi role di backend.
+        </p>
+
+        <button
+          id="protectedTestButton"
+          type="button"
+          class="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="shield" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Jalankan Protected Test</span>
+        </button>
+
+        <button
+          id="logoutButton"
+          type="button"
+          class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 py-3 font-semibold text-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="log-out" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Hapus Session</span>
+        </button>
+
+        <div
+          id="protectedResult"
+          class="mt-4 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+        ></div>
+      </article>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="flex items-center gap-3">
+        <span
+          id="sessionIndicator"
+          class="h-3 w-3 rounded-full bg-slate-600"
+        ></span>
+
+        <div>
+          <h2 class="font-semibold">Status Session</h2>
+          <p id="sessionStatus" class="text-sm text-slate-400">
+            Belum login.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div class="mb-2 flex items-center gap-2">
+            <i data-lucide="database" class="h-5 w-5 text-amber-400"></i>
+            <p class="text-sm font-medium text-amber-400">Phase 1</p>
+          </div>
+
+          <h2 class="text-xl font-semibold">Master Database</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+            Memeriksa keberadaan seluruh tab, urutan header, dan jumlah record
+            pada Google Sheets.
+          </p>
+        </div>
+
+        <button
+          id="databaseHealthButton"
+          type="button"
+          class="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 py-3 font-semibold text-white transition hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="database-zap" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Periksa Database</span>
+        </button>
+      </div>
+
+      <div
+        id="databaseHealthResult"
+        class="mt-5 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+      ></div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div class="mb-2 flex items-center gap-2">
+            <i data-lucide="table-properties" class="h-5 w-5 text-fuchsia-400"></i>
+            <p class="text-sm font-medium text-fuchsia-400">Phase 4</p>
+          </div>
+
+          <h2 class="text-xl font-semibold">Master Data</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+            Membaca master Teams, Players, dan Matches serta memeriksa jumlah
+            data aktif yang tersedia pada Google Sheets.
+          </p>
+        </div>
+
+        <button
+          id="masterDataButton"
+          type="button"
+          class="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-fuchsia-600 px-4 py-3 font-semibold text-white transition hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="list-checks" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Periksa Master Data</span>
+        </button>
+      </div>
+
+      <div
+        id="masterDataResult"
+        class="mt-5 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+      ></div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div>
+        <div class="mb-2 flex items-center gap-2">
+          <i data-lucide="clipboard-pen-line" class="h-5 w-5 text-lime-400"></i>
+          <p class="text-sm font-medium text-lime-400">Phase 5</p>
+        </div>
+
+        <h2 class="text-xl font-semibold">Runner Match Reporting</h2>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          Memuat dashboard Runner, memulai laporan pertandingan, dan membaca
+          roster serta draft pertandingan dari Google Sheets.
+        </p>
+      </div>
+
+      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+        <button
+          id="runnerDashboardButton"
+          type="button"
+          class="flex items-center justify-center gap-2 rounded-xl bg-lime-600 px-4 py-3 font-semibold text-white transition hover:bg-lime-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="layout-dashboard" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Muat Dashboard Runner</span>
+        </button>
+
+        <div class="flex gap-2">
+          <input
+            id="runnerMatchId"
+            type="text"
+            autocomplete="off"
+            class="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 uppercase outline-none transition focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20"
+            placeholder="Match ID, contoh M001"
+          >
+
+          <button
+            id="startReportButton"
+            type="button"
+            class="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-lime-600 px-4 py-3 font-semibold text-white transition hover:bg-lime-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <i data-lucide="play" class="button-icon h-5 w-5"></i>
+            <span class="button-label">Mulai</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="runnerReportResult"
+        class="mt-5 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+      ></div>
+    </section>
+
+    <section class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div class="mb-2 flex items-center gap-2">
+            <i data-lucide="shield-ellipsis" class="h-5 w-5 text-cyan-400"></i>
+            <p class="text-sm font-medium text-cyan-400">Phase 3</p>
+          </div>
+
+          <h2 class="text-xl font-semibold">
+            Authentication, Session & Authorization
+          </h2>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+            Memeriksa session aktif, role hasil login, konfigurasi keamanan,
+            dan daftar permission yang diberikan oleh backend.
+          </p>
+        </div>
+
+        <button
+          id="phase3HealthButton"
+          type="button"
+          class="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-3 font-semibold text-white transition hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <i data-lucide="shield-check" class="button-icon h-5 w-5"></i>
+          <span class="button-label">Periksa Phase 3</span>
+        </button>
+      </div>
+
+      <div
+        id="phase3HealthResult"
+        class="mt-5 hidden rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm"
+      ></div>
+    </section>
+  </main>
+
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec';
+    const Config = {
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec'
+    };
 
-    function phaseZeroApp() {
-      return {
-        loading: false,
-        loadingAction: '',
-        loginInput: '',
-        sessionRole: sessionStorage.getItem('ybm_role') || '',
-        sessionToken: sessionStorage.getItem('ybm_token') || '',
-        lastResponse: null,
-        modal: { show: false, title: '', message: '' },
+    const State = {
+      token: sessionStorage.getItem('ybm_session_token') || '',
+      role: sessionStorage.getItem('ybm_session_role') || '',
+      route: 'home',
+      routeParams: {},
+      mobileMenuOpen: false,
+      apiStatus: 'idle',
+      scheduleFilter: 'ALL',
+      publicData: {
+        bootstrap: null,
+        standings: [],
+        schedule: [],
+        results: [],
+        teams: [],
+        topScorers: [],
+        mvpRanking: [],
+        matchDetails: {}
+      },
+      loading: {
+        route: false,
+        apiHealth: false
+      },
+      errors: {
+        route: '',
+        apiHealth: ''
+      }
+    };
 
-        initApp() {
-          this.$nextTick(() => {
-            if (window.lucide) {
-              lucide.createIcons();
-            }
-          });
-        },
+    const Elements = {
+      toast: document.getElementById('toast'),
+      publicApp: document.getElementById('publicApp'),
+      publicView: document.getElementById('publicView'),
+      desktopNavigation: document.getElementById('desktopNavigation'),
+      mobileNavigation: document.getElementById('mobileNavigation'),
+      mobileMenuButton: document.getElementById('mobileMenuButton'),
+      apiStatusButton: document.getElementById('apiStatusButton'),
+      apiStatusIndicator: document.getElementById('apiStatusIndicator'),
+      footerApiStatusButton: document.getElementById('footerApiStatusButton'),
+      globalModal: document.getElementById('globalModal'),
+      globalModalTitle: document.getElementById('globalModalTitle'),
+      globalModalMessage: document.getElementById('globalModalMessage'),
+      globalModalCloseButton: document.getElementById('globalModalCloseButton'),
+      globalModalActionButton: document.getElementById('globalModalActionButton'),
+      publicTestButton: document.getElementById('publicTestButton'),
+      publicResult: document.getElementById('publicResult'),
+      loginForm: document.getElementById('loginForm'),
+      loginButton: document.getElementById('loginButton'),
+      loginResult: document.getElementById('loginResult'),
+      protectedTestButton: document.getElementById('protectedTestButton'),
+      protectedResult: document.getElementById('protectedResult'),
+      logoutButton: document.getElementById('logoutButton'),
+      sessionIndicator: document.getElementById('sessionIndicator'),
+      sessionStatus: document.getElementById('sessionStatus'),
+      databaseHealthButton: document.getElementById('databaseHealthButton'),
+      databaseHealthResult: document.getElementById('databaseHealthResult'),
+      masterDataButton: document.getElementById('masterDataButton'),
+      masterDataResult: document.getElementById('masterDataResult'),
+      runnerDashboardButton: document.getElementById('runnerDashboardButton'),
+      runnerMatchId: document.getElementById('runnerMatchId'),
+      startReportButton: document.getElementById('startReportButton'),
+      runnerReportResult: document.getElementById('runnerReportResult'),
+      phase3HealthButton: document.getElementById('phase3HealthButton'),
+      phase3HealthResult: document.getElementById('phase3HealthResult')
+    };
 
-        showAlert(title, message) {
-          this.modal = { show: true, title: title, message: message };
-        },
+    const API = {
+      post: async function(action, payload, token) {
+        const response = await fetch(Config.SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            action: action,
+            token: token || '',
+            payload: payload || {}
+          })
+        });
 
-        logout() {
-          sessionStorage.removeItem('ybm_role');
-          sessionStorage.removeItem('ybm_token');
-          this.sessionRole = '';
-          this.sessionToken = '';
-          this.lastResponse = { ok: true, data: { message: 'Sesi lokal berhasil dibersihkan.' } };
-        },
+        const text = await response.text();
+        let result;
 
-        async callApi(action, payload = {}) {
-          this.loading = true;
-          this.loadingAction = action;
-          try {
-            const reqBody = {
-              action: action,
-              token: this.sessionToken,
-              payload: payload
-            };
-            
-            const response = await fetch(SCRIPT_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-              body: JSON.stringify(reqBody)
-            });
+        try {
+          result = JSON.parse(text);
+        } catch (error) {
+          throw new Error(
+            'Response backend bukan JSON valid. Periksa deployment GAS.'
+          );
+        }
 
-            const rawText = await response.text();
-            const json = JSON.parse(rawText);
-            this.lastResponse = json;
+        if (!result.ok) {
+          const apiError = new Error(
+            result.message || 'Request gagal diproses.'
+          );
 
-            if (!json.ok) {
-              this.showAlert('Peringatan Backend', json.message || 'Terjadi kesalahan pada backend.');
-            }
+          apiError.code = result.code || 'SERVER_ERROR';
+          throw apiError;
+        }
 
-            return json;
-          } catch (err) {
-            const errObj = { ok: false, message: 'Gagal komunikasi jaringan: ' + err.message };
-            this.lastResponse = errObj;
-            this.showAlert('Kesalahan Koneksi', errObj.message);
-            return errObj;
-          } finally {
-            this.loading = false;
-            this.loadingAction = '';
-            this.$nextTick(() => {
-              if (window.lucide) lucide.createIcons();
-            });
-          }
-        },
+        return result.data;
+      }
+    };
 
-        async runPublicTest() {
-          await this.callApi('publicTest');
-        },
+    const UI = {
+      setButtonLoading: function(button, loading, loadingText) {
+        const icon = button.querySelector('.button-icon');
+        const label = button.querySelector('.button-label');
 
-        async runSetupDatabase() {
-          const res = await this.callApi('setupDatabase');
-          if (res.ok) {
-            this.showAlert('Database Inisialisasi', 'Database 10 tabel berhasil disiapkan di Google Sheet!');
-          }
-        },
+        button.disabled = loading;
 
-        async runLoginTest() {
-          const res = await this.callApi('login', { password: this.loginInput });
-          if (res.ok && res.data) {
-            this.sessionRole = res.data.role;
-            this.sessionToken = res.data.token;
-            sessionStorage.setItem('ybm_role', res.data.role);
-            sessionStorage.setItem('ybm_token', res.data.token);
-            this.loginInput = '';
-            this.showAlert('Login Berhasil', 'Login sukses sebagai role: ' + res.data.role);
-          }
-        },
+        if (loading) {
+          button.dataset.originalLabel = label.textContent;
+          icon.setAttribute('data-lucide', 'loader-circle');
+          icon.classList.add('animate-spin');
+          label.textContent = loadingText;
+        } else {
+          icon.classList.remove('animate-spin');
+          label.textContent = button.dataset.originalLabel || label.textContent;
+        }
 
-        async runProtectedTest() {
-          await this.callApi('protectedTest');
+        lucide.createIcons();
+      },
+
+      showResult: function(element, data) {
+        element.classList.remove('hidden');
+        element.classList.add('fade-in');
+        element.innerHTML =
+          '<pre class="overflow-auto whitespace-pre-wrap break-words text-xs text-slate-300">' +
+          Utils.escapeHtml(JSON.stringify(data, null, 2)) +
+          '</pre>';
+      },
+
+      showToast: function(message, type) {
+        const success = type === 'success';
+
+        Elements.toast.textContent = message;
+        Elements.toast.className =
+          'fixed right-4 top-4 z-50 max-w-sm rounded-xl border px-4 py-3 shadow-2xl fade-in ' +
+          (success
+            ? 'border-emerald-500/40 bg-emerald-950 text-emerald-200'
+            : 'border-red-500/40 bg-red-950 text-red-200');
+
+        window.clearTimeout(UI.toastTimer);
+
+        UI.toastTimer = window.setTimeout(function() {
+          Elements.toast.classList.add('hidden');
+        }, 3500);
+      },
+
+      updateSessionStatus: function() {
+        if (State.token && State.role) {
+          Elements.sessionIndicator.className =
+            'h-3 w-3 rounded-full bg-emerald-400';
+          Elements.sessionStatus.textContent =
+            'Login sebagai ' + State.role + '. Token tersimpan di sessionStorage.';
+        } else {
+          Elements.sessionIndicator.className =
+            'h-3 w-3 rounded-full bg-slate-600';
+          Elements.sessionStatus.textContent = 'Belum login.';
+        }
+      },
+
+      showModal: function(title, message) {
+        Elements.globalModalTitle.textContent = title;
+        Elements.globalModalMessage.textContent = message;
+        Elements.globalModal.classList.remove('hidden');
+        Elements.globalModal.classList.add('flex');
+        Elements.globalModalActionButton.focus();
+      },
+
+      closeModal: function() {
+        Elements.globalModal.classList.add('hidden');
+        Elements.globalModal.classList.remove('flex');
+      },
+
+      updateApiStatus: function(status) {
+        State.apiStatus = status;
+
+        if (status === 'online') {
+          Elements.apiStatusIndicator.className =
+            'h-2.5 w-2.5 rounded-full bg-emerald-400';
+        } else if (status === 'checking') {
+          Elements.apiStatusIndicator.className =
+            'h-2.5 w-2.5 animate-pulse rounded-full bg-amber-400';
+        } else if (status === 'offline') {
+          Elements.apiStatusIndicator.className =
+            'h-2.5 w-2.5 rounded-full bg-red-400';
+        } else {
+          Elements.apiStatusIndicator.className =
+            'h-2.5 w-2.5 rounded-full bg-slate-600';
         }
       }
-    }
+    };
+
+    const Components = {
+      pageHeader: function(eyebrow, title, description, icon) {
+        return (
+          '<header class="mb-8 route-enter">' +
+            '<div class="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-4 w-4"></i>' +
+              Utils.escapeHtml(eyebrow) +
+            '</div>' +
+            '<h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">' +
+              Utils.escapeHtml(title) +
+            '</h1>' +
+            '<p class="mt-3 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">' +
+              Utils.escapeHtml(description) +
+            '</p>' +
+          '</header>'
+        );
+      },
+
+      foundationCard: function(title, description, icon) {
+        return (
+          '<article class="public-card route-enter p-5 sm:p-6">' +
+            '<span class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">' +
+              '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-5 w-5"></i>' +
+            '</span>' +
+            '<h2 class="text-lg font-bold text-white">' +
+              Utils.escapeHtml(title) +
+            '</h2>' +
+            '<p class="mt-2 text-sm leading-6 text-slate-400">' +
+              Utils.escapeHtml(description) +
+            '</p>' +
+          '</article>'
+        );
+      },
+
+      skeletonGrid: function() {
+        return (
+          '<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Memuat konten">' +
+            '<div class="public-card p-5">' +
+              '<div class="skeleton h-5 w-24 rounded"></div>' +
+              '<div class="skeleton mt-5 h-8 w-3/4 rounded"></div>' +
+              '<div class="skeleton mt-3 h-4 w-full rounded"></div>' +
+              '<div class="skeleton mt-2 h-4 w-2/3 rounded"></div>' +
+            '</div>' +
+            '<div class="public-card p-5">' +
+              '<div class="skeleton h-5 w-20 rounded"></div>' +
+              '<div class="skeleton mt-5 h-8 w-2/3 rounded"></div>' +
+              '<div class="skeleton mt-3 h-4 w-full rounded"></div>' +
+              '<div class="skeleton mt-2 h-4 w-1/2 rounded"></div>' +
+            '</div>' +
+            '<div class="public-card p-5 sm:col-span-2 lg:col-span-1">' +
+              '<div class="skeleton h-5 w-28 rounded"></div>' +
+              '<div class="skeleton mt-5 h-8 w-4/5 rounded"></div>' +
+              '<div class="skeleton mt-3 h-4 w-full rounded"></div>' +
+              '<div class="skeleton mt-2 h-4 w-3/4 rounded"></div>' +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      emptyState: function(title, description, icon) {
+        return (
+          '<div class="public-card route-enter px-5 py-12 text-center">' +
+            '<span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-slate-400">' +
+              '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-6 w-6"></i>' +
+            '</span>' +
+            '<h2 class="mt-5 text-lg font-bold text-white">' +
+              Utils.escapeHtml(title) +
+            '</h2>' +
+            '<p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">' +
+              Utils.escapeHtml(description) +
+            '</p>' +
+          '</div>'
+        );
+      },
+
+      compactEmptyState: function(title, description, icon) {
+        return (
+          '<div class="py-8 text-center">' +
+            '<span class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800 text-slate-400">' +
+              '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-5 w-5"></i>' +
+            '</span>' +
+            '<p class="mt-4 font-semibold text-slate-200">' +
+              Utils.escapeHtml(title) +
+            '</p>' +
+            '<p class="mx-auto mt-1 max-w-sm text-sm leading-6 text-slate-500">' +
+              Utils.escapeHtml(description) +
+            '</p>' +
+          '</div>'
+        );
+      },
+
+      homeSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<section class="public-card overflow-hidden p-6 sm:p-8">' +
+              '<div class="skeleton h-5 w-36 rounded"></div>' +
+              '<div class="skeleton mt-5 h-10 w-full max-w-xl rounded"></div>' +
+              '<div class="skeleton mt-4 h-5 w-full max-w-2xl rounded"></div>' +
+              '<div class="skeleton mt-2 h-5 w-2/3 max-w-lg rounded"></div>' +
+            '</section>' +
+            '<section class="mt-6 grid gap-4 lg:grid-cols-2">' +
+              '<div class="public-card p-5 sm:p-6">' +
+                '<div class="skeleton h-5 w-28 rounded"></div>' +
+                '<div class="skeleton mt-6 h-24 w-full rounded-xl"></div>' +
+                '<div class="skeleton mt-4 h-4 w-2/3 rounded"></div>' +
+              '</div>' +
+              '<div class="public-card p-5 sm:p-6">' +
+                '<div class="skeleton h-5 w-32 rounded"></div>' +
+                '<div class="skeleton mt-6 h-24 w-full rounded-xl"></div>' +
+                '<div class="skeleton mt-4 h-4 w-1/2 rounded"></div>' +
+              '</div>' +
+            '</section>' +
+            '<section class="mt-6 grid gap-4 lg:grid-cols-3">' +
+              '<div class="public-card p-5 sm:p-6 lg:col-span-2">' +
+                '<div class="skeleton h-5 w-32 rounded"></div>' +
+                '<div class="mt-6 space-y-3">' +
+                  '<div class="skeleton h-12 w-full rounded-lg"></div>' +
+                  '<div class="skeleton h-12 w-full rounded-lg"></div>' +
+                  '<div class="skeleton h-12 w-full rounded-lg"></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="grid gap-4">' +
+                '<div class="public-card p-5 sm:p-6">' +
+                  '<div class="skeleton h-5 w-28 rounded"></div>' +
+                  '<div class="skeleton mt-5 h-7 w-3/4 rounded"></div>' +
+                  '<div class="skeleton mt-3 h-4 w-1/2 rounded"></div>' +
+                '</div>' +
+                '<div class="public-card p-5 sm:p-6">' +
+                  '<div class="skeleton h-5 w-28 rounded"></div>' +
+                  '<div class="skeleton mt-5 h-7 w-3/4 rounded"></div>' +
+                  '<div class="skeleton mt-3 h-4 w-1/2 rounded"></div>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+          '</div>'
+        );
+      },
+
+      homeError: function(message) {
+        return (
+          Components.pageHeader(
+            'Beranda',
+            'Informasi Kompetisi',
+            'Data publik belum dapat dimuat dari layanan YBM Super League.',
+            'circle-alert'
+          ) +
+          '<section class="public-card route-enter px-5 py-12 text-center">' +
+            '<span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-400">' +
+              '<i data-lucide="cloud-off" class="h-6 w-6"></i>' +
+            '</span>' +
+            '<h2 class="mt-5 text-lg font-bold text-white">' +
+              'Data Home gagal dimuat' +
+            '</h2>' +
+            '<p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-400">' +
+              Utils.escapeHtml(message) +
+            '</p>' +
+            '<button ' +
+              'id="homeRetryButton" ' +
+              'type="button" ' +
+              'class="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"' +
+            '>' +
+              '<i data-lucide="refresh-cw" class="button-icon h-5 w-5"></i>' +
+              '<span class="button-label">Coba Lagi</span>' +
+            '</button>' +
+          '</section>'
+        );
+      },
+
+      homeMatchCard: function(title, match, resultMode) {
+        if (!match || !match.match_id) {
+          return (
+            '<article class="public-card route-enter p-5 sm:p-6">' +
+              '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+                '<i data-lucide="' +
+                  (resultMode ? 'list-checks' : 'calendar-days') +
+                  '" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(title) +
+              '</div>' +
+              Components.compactEmptyState(
+                resultMode
+                  ? 'Belum ada hasil pertandingan'
+                  : 'Belum ada jadwal berikutnya',
+                resultMode
+                  ? 'Hasil resmi akan tampil setelah pertandingan dipublikasikan.'
+                  : 'Jadwal pertandingan berikutnya belum tersedia.',
+                resultMode ? 'goal' : 'calendar-clock'
+              ) +
+            '</article>'
+          );
+        }
+
+        const homeScore = resultMode
+          ? Utils.escapeHtml(match.home_score)
+          : '';
+        const awayScore = resultMode
+          ? Utils.escapeHtml(match.away_score)
+          : '';
+
+        return (
+          '<article class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center justify-between gap-4">' +
+              '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+                '<i data-lucide="' +
+                  (resultMode ? 'list-checks' : 'calendar-days') +
+                  '" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(title) +
+              '</div>' +
+              '<span class="rounded-full bg-slate-800 px-3 py-1 text-xs font-bold text-slate-300">' +
+                'Round ' + Utils.escapeHtml(match.round_no || '-') +
+              '</span>' +
+            '</div>' +
+            '<div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">' +
+              '<div class="min-w-0 text-center">' +
+                '<span class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800 text-slate-400">' +
+                  '<i data-lucide="shield" class="h-6 w-6"></i>' +
+                '</span>' +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.home_team_name || match.home_team_id || 'Home'
+                  ) +
+                '</p>' +
+              '</div>' +
+              (
+                resultMode
+                  ? '<div class="flex items-center gap-2 text-3xl font-black text-white">' +
+                      '<span>' + homeScore + '</span>' +
+                      '<span class="text-slate-600">–</span>' +
+                      '<span>' + awayScore + '</span>' +
+                    '</div>'
+                  : '<span class="rounded-full border border-slate-700 px-3 py-1 text-xs font-bold text-slate-400">VS</span>'
+              ) +
+              '<div class="min-w-0 text-center">' +
+                '<span class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800 text-slate-400">' +
+                  '<i data-lucide="shield" class="h-6 w-6"></i>' +
+                '</span>' +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.away_team_name || match.away_team_id || 'Away'
+                  ) +
+                '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-800 pt-4 text-xs text-slate-400">' +
+              '<span class="inline-flex items-center gap-1.5">' +
+                '<i data-lucide="calendar" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(Utils.formatDate(match.match_date)) +
+              '</span>' +
+              (
+                match.match_time
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="clock-3" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(Utils.formatTime(match.match_time)) +
+                    '</span>'
+                  : ''
+              ) +
+              (
+                match.venue
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="map-pin" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(match.venue) +
+                    '</span>'
+                  : ''
+              ) +
+            '</div>' +
+          '</article>'
+        );
+      },
+
+      miniStandings: function(standings) {
+        const rows = Array.isArray(standings)
+          ? standings.slice(0, 5)
+          : [];
+
+        if (rows.length === 0) {
+          return Components.compactEmptyState(
+            'Klasemen belum tersedia',
+            'Klasemen akan terisi setelah pertandingan resmi dipublikasikan.',
+            'table-properties'
+          );
+        }
+
+        return (
+          '<div class="mt-5 overflow-hidden rounded-xl border border-slate-800">' +
+            '<div class="grid grid-cols-[2.5rem_1fr_3rem_3rem] gap-2 bg-slate-950/70 px-3 py-2 text-xs font-bold uppercase tracking-wide text-slate-500">' +
+              '<span>Pos</span>' +
+              '<span>Tim</span>' +
+              '<span class="text-center">Main</span>' +
+              '<span class="text-center">Poin</span>' +
+            '</div>' +
+            rows.map(function(standing, index) {
+              return (
+                '<div class="grid grid-cols-[2.5rem_1fr_3rem_3rem] items-center gap-2 border-t border-slate-800 px-3 py-3 text-sm">' +
+                  '<span class="font-bold text-slate-400">' +
+                    Utils.escapeHtml(standing.position || index + 1) +
+                  '</span>' +
+                  '<span class="min-w-0 truncate font-semibold text-white">' +
+                    Utils.escapeHtml(
+                      standing.team_name ||
+                      standing.short_name ||
+                      standing.team_id ||
+                      '-'
+                    ) +
+                  '</span>' +
+                  '<span class="text-center text-slate-400">' +
+                    Utils.escapeHtml(standing.played || 0) +
+                  '</span>' +
+                  '<span class="text-center font-black text-emerald-400">' +
+                    Utils.escapeHtml(standing.points || 0) +
+                  '</span>' +
+                '</div>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      leaderCard: function(title, leader, type) {
+        const isScorer = type === 'scorer';
+
+        if (!leader || !leader.player_id) {
+          return (
+            '<article class="public-card route-enter p-5 sm:p-6">' +
+              '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+                '<i data-lucide="' +
+                  (isScorer ? 'goal' : 'award') +
+                  '" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(title) +
+              '</div>' +
+              Components.compactEmptyState(
+                isScorer
+                  ? 'Top Scorer belum tersedia'
+                  : 'MVP Leader belum tersedia',
+                'Ranking akan tampil setelah data pertandingan dipublikasikan.',
+                isScorer ? 'goal' : 'award'
+              ) +
+            '</article>'
+          );
+        }
+
+        return (
+          '<article class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="' +
+                (isScorer ? 'goal' : 'award') +
+                '" class="h-4 w-4"></i>' +
+              Utils.escapeHtml(title) +
+            '</div>' +
+            '<div class="mt-5 flex items-center gap-4">' +
+              '<span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">' +
+                '<i data-lucide="' +
+                  (isScorer ? 'crosshair' : 'medal') +
+                  '" class="h-6 w-6"></i>' +
+              '</span>' +
+              '<div class="min-w-0">' +
+                '<h3 class="truncate font-bold text-white">' +
+                  Utils.escapeHtml(leader.player_name || leader.player_id) +
+                '</h3>' +
+                '<p class="mt-1 truncate text-sm text-slate-400">' +
+                  Utils.escapeHtml(
+                    leader.team_name || leader.team_id || 'Tim belum tersedia'
+                  ) +
+                '</p>' +
+              '</div>' +
+              '<div class="ml-auto shrink-0 text-right">' +
+                '<p class="text-2xl font-black text-white">' +
+                  Utils.escapeHtml(
+                    isScorer
+                      ? leader.goals || 0
+                      : Utils.formatDecimal(leader.mvp_index)
+                  ) +
+                '</p>' +
+                '<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">' +
+                  (isScorer ? 'Gol' : 'MVP Index') +
+                '</p>' +
+              '</div>' +
+            '</div>' +
+          '</article>'
+        );
+      }
+    };
+
+    const Phase9CComponents = {
+      standingsSkeleton: function() {
+        return (
+          '<div class="public-card route-enter overflow-hidden">' +
+            '<div class="hidden grid-cols-[3rem_minmax(12rem,1fr)_4rem_4rem_4rem_4rem_4rem_4rem_4rem_5rem] gap-3 border-b border-slate-800 bg-slate-950/60 px-5 py-4 lg:grid">' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 w-24 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+              '<div class="skeleton h-4 rounded"></div>' +
+            '</div>' +
+            [1, 2, 3, 4, 5, 6, 7, 8].map(function() {
+              return (
+                '<div class="grid grid-cols-[2.5rem_minmax(0,1fr)_3rem_3rem_3rem] items-center gap-3 border-b border-slate-800 px-4 py-4 last:border-b-0 lg:grid-cols-[3rem_minmax(12rem,1fr)_4rem_4rem_4rem_4rem_4rem_4rem_4rem_5rem] lg:px-5">' +
+                  '<div class="skeleton h-5 rounded"></div>' +
+                  '<div class="skeleton h-5 w-3/4 rounded"></div>' +
+                  '<div class="skeleton h-5 rounded"></div>' +
+                  '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                  '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                  '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                  '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                  '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                  '<div class="skeleton h-5 rounded"></div>' +
+                  '<div class="skeleton h-5 rounded"></div>' +
+                '</div>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      standingsTable: function(standings) {
+        const rows = Array.isArray(standings) ? standings : [];
+
+        if (rows.length === 0) {
+          return Components.emptyState(
+            'Klasemen belum tersedia',
+            'Klasemen akan muncul setelah pertandingan resmi dipublikasikan.',
+            'table-properties'
+          );
+        }
+
+        return (
+          '<div class="public-card route-enter overflow-hidden">' +
+            '<div class="grid grid-cols-[2.5rem_minmax(0,1fr)_3rem_3rem_3rem] gap-3 border-b border-slate-800 bg-slate-950/60 px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500 lg:grid-cols-[3rem_minmax(12rem,1fr)_4rem_4rem_4rem_4rem_4rem_4rem_4rem_5rem] lg:px-5">' +
+              '<span>Pos</span>' +
+              '<span class="text-left">Tim</span>' +
+              '<span>Main</span>' +
+              '<span class="hidden lg:block">Menang</span>' +
+              '<span class="hidden lg:block">Seri</span>' +
+              '<span class="hidden lg:block">Kalah</span>' +
+              '<span class="hidden lg:block">GM</span>' +
+              '<span class="hidden lg:block">GK</span>' +
+              '<span>SG</span>' +
+              '<span>Poin</span>' +
+            '</div>' +
+            rows.map(function(standing, index) {
+              const position = standing.position || index + 1;
+              const goalDifference = Number(
+                standing.goal_difference || 0
+              );
+              const goalDifferenceText = goalDifference > 0
+                ? '+' + goalDifference
+                : String(goalDifference);
+
+              return (
+                '<div class="grid grid-cols-[2.5rem_minmax(0,1fr)_3rem_3rem_3rem] items-center gap-3 border-b border-slate-800 px-4 py-4 text-center text-sm last:border-b-0 lg:grid-cols-[3rem_minmax(12rem,1fr)_4rem_4rem_4rem_4rem_4rem_4rem_4rem_5rem] lg:px-5">' +
+                  '<span class="font-black text-slate-400">' +
+                    Utils.escapeHtml(position) +
+                  '</span>' +
+                  '<div class="flex min-w-0 items-center gap-3 text-left">' +
+                    '<span class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-800 text-slate-400">' +
+                      (
+                        standing.logo_url
+                          ? '<img src="' +
+                              Utils.escapeHtml(standing.logo_url) +
+                              '" alt="" class="h-full w-full object-cover">'
+                          : '<i data-lucide="shield" class="h-5 w-5"></i>'
+                      ) +
+                    '</span>' +
+                    '<div class="min-w-0">' +
+                      '<p class="truncate font-bold text-white">' +
+                        Utils.escapeHtml(
+                          standing.team_name ||
+                          standing.short_name ||
+                          standing.team_id ||
+                          '-'
+                        ) +
+                      '</p>' +
+                      '<p class="truncate text-xs text-slate-500 lg:hidden">' +
+                        Utils.escapeHtml(standing.short_name || standing.team_id || '') +
+                      '</p>' +
+                    '</div>' +
+                  '</div>' +
+                  '<span class="text-slate-300">' +
+                    Utils.escapeHtml(standing.played || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(standing.won || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(standing.draw || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(standing.lost || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(standing.goals_for || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(standing.goals_against || 0) +
+                  '</span>' +
+                  '<span class="font-semibold text-slate-300">' +
+                    Utils.escapeHtml(goalDifferenceText) +
+                  '</span>' +
+                  '<span class="font-black text-emerald-400">' +
+                    Utils.escapeHtml(standing.points || 0) +
+                  '</span>' +
+                '</div>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      scheduleSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<div class="mb-6 flex gap-2">' +
+              '<div class="skeleton h-11 w-24 rounded-xl"></div>' +
+              '<div class="skeleton h-11 w-32 rounded-xl"></div>' +
+              '<div class="skeleton h-11 w-24 rounded-xl"></div>' +
+            '</div>' +
+            '<div class="grid gap-4 lg:grid-cols-2">' +
+              [1, 2, 3, 4].map(function() {
+                return (
+                  '<div class="public-card p-5">' +
+                    '<div class="flex justify-between gap-4">' +
+                      '<div class="skeleton h-5 w-20 rounded"></div>' +
+                      '<div class="skeleton h-5 w-24 rounded"></div>' +
+                    '</div>' +
+                    '<div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">' +
+                      '<div class="skeleton h-14 rounded-xl"></div>' +
+                      '<div class="skeleton h-7 w-10 rounded-full"></div>' +
+                      '<div class="skeleton h-14 rounded-xl"></div>' +
+                    '</div>' +
+                    '<div class="skeleton mt-6 h-4 w-3/4 rounded"></div>' +
+                  '</div>'
+                );
+              }).join('') +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      scheduleFilters: function(activeFilter) {
+        const filters = [
+          {
+            value: 'ALL',
+            label: 'Semua'
+          },
+          {
+            value: 'UPCOMING',
+            label: 'Akan Datang'
+          },
+          {
+            value: 'FINISHED',
+            label: 'Selesai'
+          }
+        ];
+
+        return (
+          '<div class="mb-6 flex flex-wrap gap-2" role="group" aria-label="Filter jadwal">' +
+            filters.map(function(filter) {
+              const active = filter.value === activeFilter;
+
+              return (
+                '<button ' +
+                  'type="button" ' +
+                  'data-schedule-filter="' + filter.value + '" ' +
+                  'aria-pressed="' + String(active) + '" ' +
+                  'class="inline-flex min-h-11 items-center justify-center rounded-xl border px-4 text-sm font-semibold transition ' +
+                    (
+                      active
+                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300'
+                        : 'border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
+                    ) +
+                  '"' +
+                '>' +
+                  Utils.escapeHtml(filter.label) +
+                '</button>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      scheduleStatus: function(status) {
+        const normalizedStatus = String(
+          status || 'SCHEDULED'
+        ).toUpperCase();
+        const statuses = {
+          SCHEDULED: {
+            label: 'Akan Datang',
+            classes: 'bg-sky-500/10 text-sky-300'
+          },
+          REPORTING: {
+            label: 'Pelaporan',
+            classes: 'bg-amber-500/10 text-amber-300'
+          },
+          SUBMITTED: {
+            label: 'Menunggu Review',
+            classes: 'bg-violet-500/10 text-violet-300'
+          },
+          PUBLISHED: {
+            label: 'Selesai',
+            classes: 'bg-emerald-500/10 text-emerald-300'
+          },
+          REOPENED: {
+            label: 'Koreksi',
+            classes: 'bg-orange-500/10 text-orange-300'
+          }
+        };
+
+        return statuses[normalizedStatus] || {
+          label: normalizedStatus,
+          classes: 'bg-slate-800 text-slate-300'
+        };
+      },
+
+      scheduleCard: function(match) {
+        const status = Phase9CComponents.scheduleStatus(match.status);
+        const isPublished = String(
+          match.status || ''
+        ).toUpperCase() === 'PUBLISHED';
+
+        return (
+          '<article class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3">' +
+              '<span class="inline-flex items-center gap-2 text-sm font-bold text-emerald-400">' +
+                '<i data-lucide="circle-dot" class="h-4 w-4"></i>' +
+                'Round ' + Utils.escapeHtml(match.round_no || '-') +
+              '</span>' +
+              '<span class="rounded-full px-3 py-1 text-xs font-bold ' +
+                status.classes +
+              '">' +
+                Utils.escapeHtml(status.label) +
+              '</span>' +
+            '</div>' +
+            '<div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">' +
+              '<div class="min-w-0 text-center">' +
+                '<span class="mx-auto flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-slate-800 text-slate-400">' +
+                  (
+                    match.home_team_logo_url
+                      ? '<img src="' +
+                          Utils.escapeHtml(match.home_team_logo_url) +
+                          '" alt="" class="h-full w-full object-cover">'
+                      : '<i data-lucide="shield" class="h-6 w-6"></i>'
+                  ) +
+                '</span>' +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.home_team_name || match.home_team_id || 'Home'
+                  ) +
+                '</p>' +
+              '</div>' +
+              (
+                isPublished
+                  ? '<div class="flex items-center gap-2 text-2xl font-black text-white">' +
+                      '<span>' + Utils.escapeHtml(match.home_score || 0) + '</span>' +
+                      '<span class="text-slate-600">–</span>' +
+                      '<span>' + Utils.escapeHtml(match.away_score || 0) + '</span>' +
+                    '</div>'
+                  : '<span class="rounded-full border border-slate-700 px-3 py-1 text-xs font-bold text-slate-400">VS</span>'
+              ) +
+              '<div class="min-w-0 text-center">' +
+                '<span class="mx-auto flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-slate-800 text-slate-400">' +
+                  (
+                    match.away_team_logo_url
+                      ? '<img src="' +
+                          Utils.escapeHtml(match.away_team_logo_url) +
+                          '" alt="" class="h-full w-full object-cover">'
+                      : '<i data-lucide="shield" class="h-6 w-6"></i>'
+                  ) +
+                '</span>' +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.away_team_name || match.away_team_id || 'Away'
+                  ) +
+                '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-800 pt-4 text-xs text-slate-400">' +
+              '<span class="inline-flex items-center gap-1.5">' +
+                '<i data-lucide="calendar" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(
+                  Utils.formatDate(match.match_date) || 'Tanggal belum tersedia'
+                ) +
+              '</span>' +
+              (
+                match.match_time
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="clock-3" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(Utils.formatTime(match.match_time)) +
+                    '</span>'
+                  : ''
+              ) +
+              (
+                match.venue
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="map-pin" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(match.venue) +
+                    '</span>'
+                  : ''
+              ) +
+            '</div>' +
+          '</article>'
+        );
+      },
+
+      filteredSchedule: function(matches, activeFilter) {
+        const rows = Array.isArray(matches) ? matches : [];
+
+        if (activeFilter === 'UPCOMING') {
+          return rows.filter(function(match) {
+            return String(match.status || '').toUpperCase() === 'SCHEDULED';
+          });
+        }
+
+        if (activeFilter === 'FINISHED') {
+          return rows.filter(function(match) {
+            return String(match.status || '').toUpperCase() === 'PUBLISHED';
+          });
+        }
+
+        return rows;
+      },
+
+      scheduleList: function(matches, activeFilter) {
+        const filteredMatches = Phase9CComponents.filteredSchedule(
+          matches,
+          activeFilter
+        );
+
+        if (filteredMatches.length === 0) {
+          const emptyTitle = activeFilter === 'UPCOMING'
+            ? 'Belum ada pertandingan akan datang'
+            : activeFilter === 'FINISHED'
+              ? 'Belum ada pertandingan selesai'
+              : 'Jadwal belum tersedia';
+
+          return (
+            Phase9CComponents.scheduleFilters(activeFilter) +
+            Components.emptyState(
+              emptyTitle,
+              'Tidak ada pertandingan yang sesuai dengan filter yang dipilih.',
+              'calendar-search'
+            )
+          );
+        }
+
+        return (
+          Phase9CComponents.scheduleFilters(activeFilter) +
+          '<div class="grid gap-4 lg:grid-cols-2">' +
+            filteredMatches.map(function(match) {
+              return Phase9CComponents.scheduleCard(match);
+            }).join('') +
+          '</div>'
+        );
+      }
+    };
+
+    const Phase9DComponents = {
+      resultsSkeleton: function() {
+        return (
+          '<div class="grid gap-4 lg:grid-cols-2" aria-label="Memuat hasil pertandingan">' +
+            [1, 2, 3, 4].map(function() {
+              return (
+                '<article class="public-card route-enter p-5 sm:p-6">' +
+                  '<div class="flex items-center justify-between gap-4">' +
+                    '<div class="skeleton h-5 w-20 rounded"></div>' +
+                    '<div class="skeleton h-5 w-28 rounded"></div>' +
+                  '</div>' +
+                  '<div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">' +
+                    '<div class="text-center">' +
+                      '<div class="skeleton mx-auto h-12 w-12 rounded-xl"></div>' +
+                      '<div class="skeleton mx-auto mt-3 h-4 w-24 rounded"></div>' +
+                    '</div>' +
+                    '<div class="skeleton h-9 w-20 rounded"></div>' +
+                    '<div class="text-center">' +
+                      '<div class="skeleton mx-auto h-12 w-12 rounded-xl"></div>' +
+                      '<div class="skeleton mx-auto mt-3 h-4 w-24 rounded"></div>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div class="skeleton mt-6 h-4 w-3/4 rounded"></div>' +
+                  '<div class="skeleton mt-5 h-11 w-full rounded-xl"></div>' +
+                '</article>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      teamLogo: function(url, sizeClasses) {
+        const classes = sizeClasses || 'h-12 w-12';
+
+        return (
+          '<span class="mx-auto flex ' +
+            classes +
+            ' items-center justify-center overflow-hidden rounded-xl bg-slate-800 text-slate-400">' +
+            (
+              url
+                ? '<img src="' +
+                    Utils.escapeHtml(url) +
+                    '" alt="" class="h-full w-full object-cover">'
+                : '<i data-lucide="shield" class="h-6 w-6"></i>'
+            ) +
+          '</span>'
+        );
+      },
+
+      resultCard: function(match) {
+        const matchMvp = match.match_mvp || {};
+
+        return (
+          '<article class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3">' +
+              '<span class="inline-flex items-center gap-2 text-sm font-bold text-emerald-400">' +
+                '<i data-lucide="circle-check-big" class="h-4 w-4"></i>' +
+                'Round ' + Utils.escapeHtml(match.round_no || '-') +
+              '</span>' +
+              '<span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">' +
+                'Selesai' +
+              '</span>' +
+            '</div>' +
+            '<div class="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">' +
+              '<div class="min-w-0 text-center">' +
+                Phase9DComponents.teamLogo(
+                  match.home_team_logo_url,
+                  'h-12 w-12'
+                ) +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.home_team_name || match.home_team_id || 'Home'
+                  ) +
+                '</p>' +
+              '</div>' +
+              '<div class="flex items-center gap-2 text-3xl font-black text-white">' +
+                '<span>' + Utils.escapeHtml(match.home_score || 0) + '</span>' +
+                '<span class="text-slate-600">–</span>' +
+                '<span>' + Utils.escapeHtml(match.away_score || 0) + '</span>' +
+              '</div>' +
+              '<div class="min-w-0 text-center">' +
+                Phase9DComponents.teamLogo(
+                  match.away_team_logo_url,
+                  'h-12 w-12'
+                ) +
+                '<p class="mt-3 truncate text-sm font-bold text-white">' +
+                  Utils.escapeHtml(
+                    match.away_team_name || match.away_team_id || 'Away'
+                  ) +
+                '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-800 pt-4 text-xs text-slate-400">' +
+              '<span class="inline-flex items-center gap-1.5">' +
+                '<i data-lucide="calendar" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(
+                  Utils.formatDate(match.match_date) || 'Tanggal belum tersedia'
+                ) +
+              '</span>' +
+              (
+                match.match_time
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="clock-3" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(Utils.formatTime(match.match_time)) +
+                    '</span>'
+                  : ''
+              ) +
+              (
+                match.venue
+                  ? '<span class="inline-flex items-center gap-1.5">' +
+                      '<i data-lucide="map-pin" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(match.venue) +
+                    '</span>'
+                  : ''
+              ) +
+            '</div>' +
+            '<div class="mt-5 rounded-xl border border-slate-800 bg-slate-950/60 p-4">' +
+              '<div class="flex items-center gap-3">' +
+                '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">' +
+                  '<i data-lucide="award" class="h-5 w-5"></i>' +
+                '</span>' +
+                '<div class="min-w-0">' +
+                  '<p class="text-xs font-bold uppercase tracking-wide text-slate-500">' +
+                    'Match MVP' +
+                  '</p>' +
+                  '<p class="mt-1 truncate text-sm font-bold text-white">' +
+                    Utils.escapeHtml(
+                      matchMvp.player_name ||
+                      matchMvp.player_id ||
+                      'Belum tersedia'
+                    ) +
+                  '</p>' +
+                '</div>' +
+                (
+                  matchMvp.total_score !== undefined &&
+                  matchMvp.total_score !== ''
+                    ? '<span class="ml-auto shrink-0 font-black text-amber-400">' +
+                        Utils.escapeHtml(matchMvp.total_score) +
+                      '</span>'
+                    : ''
+                ) +
+              '</div>' +
+            '</div>' +
+            '<a href="#/match/' +
+              Utils.escapeHtml(match.match_id) +
+              '" class="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">' +
+              '<i data-lucide="eye" class="h-5 w-5"></i>' +
+              'Lihat Detail Pertandingan' +
+            '</a>' +
+          '</article>'
+        );
+      },
+
+      resultsList: function(results) {
+        const rows = Array.isArray(results) ? results : [];
+
+        if (rows.length === 0) {
+          return Components.emptyState(
+            'Belum ada hasil pertandingan',
+            'Hasil resmi akan tampil setelah pertandingan dipublikasikan.',
+            'goal'
+          );
+        }
+
+        return (
+          '<div class="grid gap-4 lg:grid-cols-2">' +
+            rows.map(function(match) {
+              return Phase9DComponents.resultCard(match);
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      matchDetailSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<div class="skeleton mb-6 h-11 w-44 rounded-xl"></div>' +
+            '<section class="public-card p-5 sm:p-8">' +
+              '<div class="flex justify-between gap-4">' +
+                '<div class="skeleton h-5 w-24 rounded"></div>' +
+                '<div class="skeleton h-5 w-28 rounded"></div>' +
+              '</div>' +
+              '<div class="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4">' +
+                '<div class="text-center">' +
+                  '<div class="skeleton mx-auto h-16 w-16 rounded-2xl"></div>' +
+                  '<div class="skeleton mx-auto mt-4 h-5 w-28 rounded"></div>' +
+                '</div>' +
+                '<div class="skeleton h-12 w-24 rounded"></div>' +
+                '<div class="text-center">' +
+                  '<div class="skeleton mx-auto h-16 w-16 rounded-2xl"></div>' +
+                  '<div class="skeleton mx-auto mt-4 h-5 w-28 rounded"></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="skeleton mx-auto mt-8 h-4 w-3/4 rounded"></div>' +
+            '</section>' +
+            '<div class="mt-6 grid gap-4 lg:grid-cols-2">' +
+              '<section class="public-card p-5">' +
+                '<div class="skeleton h-5 w-32 rounded"></div>' +
+                '<div class="skeleton mt-5 h-14 w-full rounded-xl"></div>' +
+                '<div class="skeleton mt-3 h-14 w-full rounded-xl"></div>' +
+              '</section>' +
+              '<section class="public-card p-5">' +
+                '<div class="skeleton h-5 w-28 rounded"></div>' +
+                '<div class="skeleton mt-5 h-14 w-full rounded-xl"></div>' +
+                '<div class="skeleton mt-3 h-14 w-full rounded-xl"></div>' +
+              '</section>' +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      matchHeader: function(match) {
+        return (
+          '<section class="public-card route-enter p-5 sm:p-8">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3">' +
+              '<span class="inline-flex items-center gap-2 text-sm font-bold text-emerald-400">' +
+                '<i data-lucide="circle-check-big" class="h-4 w-4"></i>' +
+                'Round ' + Utils.escapeHtml(match.round_no || '-') +
+              '</span>' +
+              '<span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">' +
+                'PUBLISHED' +
+              '</span>' +
+            '</div>' +
+            '<div class="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">' +
+              '<div class="min-w-0 text-center">' +
+                Phase9DComponents.teamLogo(
+                  match.home_team_logo_url,
+                  'h-16 w-16 sm:h-20 sm:w-20'
+                ) +
+                '<h2 class="mt-4 truncate text-sm font-black text-white sm:text-lg">' +
+                  Utils.escapeHtml(
+                    match.home_team_name || match.home_team_id || 'Home'
+                  ) +
+                '</h2>' +
+              '</div>' +
+              '<div class="flex items-center gap-2 text-4xl font-black text-white sm:gap-4 sm:text-5xl">' +
+                '<span>' + Utils.escapeHtml(match.home_score || 0) + '</span>' +
+                '<span class="text-slate-600">–</span>' +
+                '<span>' + Utils.escapeHtml(match.away_score || 0) + '</span>' +
+              '</div>' +
+              '<div class="min-w-0 text-center">' +
+                Phase9DComponents.teamLogo(
+                  match.away_team_logo_url,
+                  'h-16 w-16 sm:h-20 sm:w-20'
+                ) +
+                '<h2 class="mt-4 truncate text-sm font-black text-white sm:text-lg">' +
+                  Utils.escapeHtml(
+                    match.away_team_name || match.away_team_id || 'Away'
+                  ) +
+                '</h2>' +
+              '</div>' +
+            '</div>' +
+            '<div class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-slate-800 pt-5 text-sm text-slate-400">' +
+              '<span class="inline-flex items-center gap-2">' +
+                '<i data-lucide="calendar" class="h-4 w-4"></i>' +
+                Utils.escapeHtml(
+                  Utils.formatDate(match.match_date) || 'Tanggal belum tersedia'
+                ) +
+              '</span>' +
+              (
+                match.match_time
+                  ? '<span class="inline-flex items-center gap-2">' +
+                      '<i data-lucide="clock-3" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(Utils.formatTime(match.match_time)) +
+                    '</span>'
+                  : ''
+              ) +
+              (
+                match.venue
+                  ? '<span class="inline-flex items-center gap-2">' +
+                      '<i data-lucide="map-pin" class="h-4 w-4"></i>' +
+                      Utils.escapeHtml(match.venue) +
+                    '</span>'
+                  : ''
+              ) +
+            '</div>' +
+          '</section>'
+        );
+      },
+
+      goalsSection: function(goals) {
+        const rows = Array.isArray(goals) ? goals : [];
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="goal" class="h-5 w-5"></i>' +
+              'Pencetak Gol' +
+            '</div>' +
+            (
+              rows.length === 0
+                ? Components.compactEmptyState(
+                    'Tidak ada pencetak gol',
+                    'Pertandingan berakhir tanpa gol.',
+                    'circle-slash'
+                  )
+                : '<div class="mt-5 space-y-3">' +
+                    rows.map(function(goal) {
+                      const ownGoal = Boolean(goal.is_own_goal);
+
+                      return (
+                        '<div class="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-4">' +
+                          '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ' +
+                            (
+                              ownGoal
+                                ? 'bg-orange-500/10 text-orange-400'
+                                : 'bg-emerald-500/10 text-emerald-400'
+                            ) +
+                          '">' +
+                            '<i data-lucide="' +
+                              (ownGoal ? 'shield-alert' : 'crosshair') +
+                              '" class="h-5 w-5"></i>' +
+                          '</span>' +
+                          '<div class="min-w-0">' +
+                            '<p class="truncate font-bold text-white">' +
+                              Utils.escapeHtml(
+                                ownGoal
+                                  ? 'Own Goal'
+                                  : goal.player_name ||
+                                    goal.player_id ||
+                                    'Pemain'
+                              ) +
+                            '</p>' +
+                            '<p class="mt-1 truncate text-xs text-slate-500">' +
+                              Utils.escapeHtml(
+                                goal.team_name ||
+                                goal.team_id ||
+                                'Tim tidak tersedia'
+                              ) +
+                              (ownGoal ? ' · Kredit gol' : '') +
+                            '</p>' +
+                          '</div>' +
+                          '<span class="ml-auto shrink-0 rounded-lg bg-slate-800 px-3 py-1 font-black text-white">' +
+                            Utils.escapeHtml(goal.goal_count || 0) +
+                          '</span>' +
+                        '</div>'
+                      );
+                    }).join('') +
+                  '</div>'
+            ) +
+          '</section>'
+        );
+      },
+
+      cardsSection: function(cards) {
+        const rows = Array.isArray(cards) ? cards : [];
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="badge-alert" class="h-5 w-5"></i>' +
+              'Kartu' +
+            '</div>' +
+            (
+              rows.length === 0
+                ? Components.compactEmptyState(
+                    'Tidak ada kartu',
+                    'Tidak ada kartu yang tercatat pada pertandingan ini.',
+                    'shield-check'
+                  )
+                : '<div class="mt-5 space-y-3">' +
+                    rows.map(function(card) {
+                      const yellowCount = Number(card.yellow_count || 0);
+                      const redCount = Number(card.red_count || 0);
+
+                      return (
+                        '<div class="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-4">' +
+                          '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-300">' +
+                            '<i data-lucide="user-round" class="h-5 w-5"></i>' +
+                          '</span>' +
+                          '<div class="min-w-0">' +
+                            '<p class="truncate font-bold text-white">' +
+                              Utils.escapeHtml(
+                                card.player_name ||
+                                card.player_id ||
+                                'Pemain'
+                              ) +
+                            '</p>' +
+                            '<p class="mt-1 truncate text-xs text-slate-500">' +
+                              Utils.escapeHtml(
+                                card.team_name ||
+                                card.team_id ||
+                                'Tim tidak tersedia'
+                              ) +
+                            '</p>' +
+                          '</div>' +
+                          '<div class="ml-auto flex shrink-0 items-center gap-2">' +
+                            (
+                              yellowCount > 0
+                                ? '<span class="inline-flex items-center gap-1.5 rounded-lg bg-yellow-500/10 px-2.5 py-1 text-sm font-black text-yellow-300">' +
+                                    '<span class="h-4 w-3 rounded-sm bg-yellow-400"></span>' +
+                                    Utils.escapeHtml(yellowCount) +
+                                  '</span>'
+                                : ''
+                            ) +
+                            (
+                              redCount > 0
+                                ? '<span class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 px-2.5 py-1 text-sm font-black text-red-300">' +
+                                    '<span class="h-4 w-3 rounded-sm bg-red-500"></span>' +
+                                    Utils.escapeHtml(redCount) +
+                                  '</span>'
+                                : ''
+                            ) +
+                          '</div>' +
+                        '</div>'
+                      );
+                    }).join('') +
+                  '</div>'
+            ) +
+          '</section>'
+        );
+      },
+
+      matchMvpSection: function(matchMvp) {
+        const mvp = matchMvp || {};
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="award" class="h-5 w-5"></i>' +
+              'Match MVP' +
+            '</div>' +
+            (
+              mvp.player_id
+                ? '<div class="mt-5 flex items-center gap-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">' +
+                    '<span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">' +
+                      '<i data-lucide="medal" class="h-6 w-6"></i>' +
+                    '</span>' +
+                    '<div class="min-w-0">' +
+                      '<h3 class="truncate font-black text-white">' +
+                        Utils.escapeHtml(mvp.player_name || mvp.player_id) +
+                      '</h3>' +
+                      '<p class="mt-1 truncate text-sm text-slate-400">' +
+                        Utils.escapeHtml(
+                          mvp.team_name ||
+                          mvp.team_id ||
+                          'Tim tidak tersedia'
+                        ) +
+                      '</p>' +
+                    '</div>' +
+                    '<div class="ml-auto shrink-0 text-right">' +
+                      '<p class="text-2xl font-black text-amber-400">' +
+                        Utils.escapeHtml(mvp.total_score || 0) +
+                      '</p>' +
+                      '<p class="text-xs font-bold uppercase tracking-wide text-slate-500">' +
+                        'Rating' +
+                      '</p>' +
+                    '</div>' +
+                  '</div>'
+                : Components.compactEmptyState(
+                    'Match MVP belum tersedia',
+                    'Data Match MVP belum tersedia untuk pertandingan ini.',
+                    'award'
+                  )
+            ) +
+          '</section>'
+        );
+      },
+
+      youtubeSection: function(youtubeUrl) {
+        const embedUrl = Utils.getYouTubeEmbedUrl(youtubeUrl);
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-6">' +
+            '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="youtube" class="h-5 w-5"></i>' +
+              'Video Pertandingan' +
+            '</div>' +
+            (
+              embedUrl
+                ? '<div class="mt-5 aspect-video overflow-hidden rounded-xl border border-slate-800 bg-black">' +
+                    '<iframe ' +
+                      'src="' + Utils.escapeHtml(embedUrl) + '" ' +
+                      'title="Video pertandingan YouTube" ' +
+                      'class="h-full w-full" ' +
+                      'loading="lazy" ' +
+                      'referrerpolicy="strict-origin-when-cross-origin" ' +
+                      'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+                      'allowfullscreen' +
+                    '></iframe>' +
+                  '</div>'
+                : Components.compactEmptyState(
+                    'Video belum tersedia',
+                    'URL YouTube belum ditambahkan untuk pertandingan ini.',
+                    'video-off'
+                  )
+            ) +
+          '</section>'
+        );
+      },
+
+      matchDetail: function(data) {
+        const detail = data || {};
+        const match = detail.match || {};
+        const goals = Array.isArray(detail.goals) ? detail.goals : [];
+        const cards = Array.isArray(detail.cards) ? detail.cards : [];
+        const matchMvp = detail.match_mvp || {};
+
+        if (!match.match_id) {
+          return Components.emptyState(
+            'Detail pertandingan tidak tersedia',
+            'Snapshot pertandingan tidak berisi data pertandingan.',
+            'file-question'
+          );
+        }
+
+        return (
+          '<div class="route-enter">' +
+            '<a href="#/results" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              'Kembali ke Hasil' +
+            '</a>' +
+            Phase9DComponents.matchHeader(match) +
+            '<div class="mt-6 grid gap-4 lg:grid-cols-2">' +
+              Phase9DComponents.goalsSection(goals) +
+              Phase9DComponents.cardsSection(cards) +
+            '</div>' +
+            '<div class="mt-6 grid gap-4 lg:grid-cols-2">' +
+              Phase9DComponents.matchMvpSection(matchMvp) +
+              Phase9DComponents.youtubeSection(match.youtube_url) +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      matchDetailError: function(message) {
+        return (
+          '<div class="route-enter">' +
+            '<a href="#/results" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              'Kembali ke Hasil' +
+            '</a>' +
+            Components.emptyState(
+              'Detail pertandingan gagal dimuat',
+              message,
+              'cloud-off'
+            ) +
+          '</div>'
+        );
+      }
+    };
+
+    const Utils = {
+      escapeHtml: function(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      },
+
+      clearSession: function() {
+        State.token = '';
+        State.role = '';
+        sessionStorage.removeItem('ybm_session_token');
+        sessionStorage.removeItem('ybm_session_role');
+        UI.updateSessionStatus();
+      },
+
+      normalizeRoute: function(hash) {
+        const routeText = String(hash || '')
+          .replace(/^#\/?/, '')
+          .replace(/^\/+|\/+$/g, '');
+
+        return routeText || 'home';
+      },
+
+      formatDate: function(value) {
+        if (!value) {
+          return '';
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return String(value);
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).format(date);
+      },
+
+      formatTime: function(value) {
+        if (!value) {
+          return '';
+        }
+
+        const text = String(value);
+
+        if (/^\d{1,2}:\d{2}/.test(text)) {
+          return text.slice(0, 5);
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return text;
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).format(date);
+      },
+
+      formatDecimal: function(value) {
+        const numberValue = Number(value || 0);
+
+        if (!Number.isFinite(numberValue)) {
+          return '0';
+        }
+
+        return new Intl.NumberFormat('id-ID', {
+          maximumFractionDigits: 2
+        }).format(numberValue);
+      },
+
+      formatDateTime: function(value) {
+        if (!value) {
+          return '';
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return String(value);
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).format(date);
+      },
+
+      getYouTubeEmbedUrl: function(value) {
+        if (!value) {
+          return '';
+        }
+
+        const text = String(value).trim();
+        let parsedUrl;
+
+        try {
+          parsedUrl = new URL(text);
+        } catch (error) {
+          return '';
+        }
+
+        const hostname = parsedUrl.hostname.toLowerCase().replace(
+          /^www\./,
+          ''
+        );
+        let videoId = '';
+
+        if (hostname === 'youtu.be') {
+          videoId = parsedUrl.pathname.split('/')[1] || '';
+        } else if (
+          hostname === 'youtube.com' ||
+          hostname === 'm.youtube.com'
+        ) {
+          if (parsedUrl.pathname === '/watch') {
+            videoId = parsedUrl.searchParams.get('v') || '';
+          } else if (parsedUrl.pathname.indexOf('/embed/') === 0) {
+            videoId = parsedUrl.pathname.split('/')[2] || '';
+          } else if (parsedUrl.pathname.indexOf('/shorts/') === 0) {
+            videoId = parsedUrl.pathname.split('/')[2] || '';
+          } else if (parsedUrl.pathname.indexOf('/live/') === 0) {
+            videoId = parsedUrl.pathname.split('/')[2] || '';
+          }
+        }
+
+        if (!/^[a-zA-Z0-9_-]{6,20}$/.test(videoId)) {
+          return '';
+        }
+
+        return 'https://www.youtube-nocookie.com/embed/' + videoId;
+      }
+    };
+
+    const PublicViews = {
+      home: function() {
+        return Components.homeSkeleton();
+      },
+
+      renderHomeData: function(data) {
+        const competition = data.competition || {};
+        const standings = Array.isArray(data.standings)
+          ? data.standings
+          : [];
+        const nextMatches = Array.isArray(data.nextMatches)
+          ? data.nextMatches
+          : [];
+        const latestResults = Array.isArray(data.latestResults)
+          ? data.latestResults
+          : [];
+        const topScorers = Array.isArray(data.topScorers)
+          ? data.topScorers
+          : [];
+        const mvpLeaders = Array.isArray(data.mvpLeaders)
+          ? data.mvpLeaders
+          : [];
+        const competitionName = String(
+          competition.name || 'YBM Super League 2026'
+        );
+        const season = String(competition.season || '2026');
+
+        return (
+          '<div class="route-enter">' +
+            '<section class="public-card relative overflow-hidden p-6 sm:p-8 lg:p-10">' +
+              '<div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl"></div>' +
+              '<div class="relative">' +
+                '<div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm font-semibold text-emerald-300">' +
+                  '<i data-lucide="trophy" class="h-4 w-4"></i>' +
+                  'Season ' + Utils.escapeHtml(season) +
+                '</div>' +
+                '<h1 class="mt-5 max-w-3xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">' +
+                  Utils.escapeHtml(competitionName) +
+                '</h1>' +
+                '<p class="mt-4 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">' +
+                  'Informasi resmi jadwal, hasil, klasemen, tim, Top Scorer, dan MVP kompetisi.' +
+                '</p>' +
+                '<div class="mt-6 flex flex-wrap gap-3">' +
+                  '<a href="#/schedule" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">' +
+                    '<i data-lucide="calendar-days" class="h-5 w-5"></i>' +
+                    'Lihat Jadwal' +
+                  '</a>' +
+                  '<a href="#/standings" class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-5 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+                    '<i data-lucide="table-2" class="h-5 w-5"></i>' +
+                    'Lihat Klasemen' +
+                  '</a>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+            '<section class="mt-6 grid gap-4 lg:grid-cols-2">' +
+              Components.homeMatchCard(
+                'Pertandingan Berikutnya',
+                nextMatches[0] || {},
+                false
+              ) +
+              Components.homeMatchCard(
+                'Hasil Terbaru',
+                latestResults[0] || {},
+                true
+              ) +
+            '</section>' +
+            '<section class="mt-6 grid gap-4 lg:grid-cols-3">' +
+              '<article class="public-card route-enter p-5 sm:p-6 lg:col-span-2">' +
+                '<div class="flex flex-wrap items-center justify-between gap-4">' +
+                  '<div>' +
+                    '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+                      '<i data-lucide="table-2" class="h-4 w-4"></i>' +
+                      'Klasemen Sementara' +
+                    '</div>' +
+                    '<h2 class="mt-2 text-xl font-bold text-white">' +
+                      'Papan Atas Kompetisi' +
+                    '</h2>' +
+                  '</div>' +
+                  '<a href="#/standings" class="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-emerald-300">' +
+                    'Klasemen lengkap' +
+                    '<i data-lucide="arrow-right" class="h-4 w-4"></i>' +
+                  '</a>' +
+                '</div>' +
+                Components.miniStandings(standings) +
+              '</article>' +
+              '<div class="grid gap-4">' +
+                Components.leaderCard(
+                  'Top Scorer',
+                  topScorers[0] || {},
+                  'scorer'
+                ) +
+                Components.leaderCard(
+                  'MVP Leader',
+                  mvpLeaders[0] || {},
+                  'mvp'
+                ) +
+              '</div>' +
+            '</section>' +
+            '<div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-5 text-xs text-slate-500">' +
+              '<span class="inline-flex items-center gap-2">' +
+                '<i data-lucide="database" class="h-4 w-4"></i>' +
+                'Data resmi dari Public Snapshot' +
+              '</span>' +
+              '<span class="inline-flex items-center gap-2">' +
+                '<i data-lucide="refresh-cw" class="h-4 w-4"></i>' +
+                'Terakhir diperbarui: ' +
+                Utils.escapeHtml(
+                  data.lastUpdated
+                    ? Utils.formatDateTime(data.lastUpdated)
+                    : 'Belum tersedia'
+                ) +
+              '</span>' +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      standings: function() {
+        return (
+          Components.pageHeader(
+            'Klasemen',
+            'Klasemen Liga',
+            'Ranking resmi dari pertandingan yang telah dipublikasikan.',
+            'table-2'
+          ) +
+          Phase9CComponents.standingsSkeleton()
+        );
+      },
+
+      renderStandingsData: function(standings) {
+        return (
+          Components.pageHeader(
+            'Klasemen',
+            'Klasemen Liga',
+            'Ranking resmi dari pertandingan yang telah dipublikasikan.',
+            'table-2'
+          ) +
+          Phase9CComponents.standingsTable(standings)
+        );
+      },
+
+      standingsError: function(message) {
+        return (
+          Components.pageHeader(
+            'Klasemen',
+            'Klasemen Liga',
+            'Ranking resmi dari pertandingan yang telah dipublikasikan.',
+            'table-2'
+          ) +
+          Components.emptyState(
+            'Klasemen gagal dimuat',
+            message,
+            'cloud-off'
+          )
+        );
+      },
+
+      schedule: function() {
+        return (
+          Components.pageHeader(
+            'Jadwal',
+            'Jadwal Pertandingan',
+            'Daftar round, tanggal, waktu, venue, dan status pertandingan.',
+            'calendar-days'
+          ) +
+          Phase9CComponents.scheduleSkeleton()
+        );
+      },
+
+      renderScheduleData: function(matches) {
+        return (
+          Components.pageHeader(
+            'Jadwal',
+            'Jadwal Pertandingan',
+            'Daftar round, tanggal, waktu, venue, dan status pertandingan.',
+            'calendar-days'
+          ) +
+          Phase9CComponents.scheduleList(
+            matches,
+            State.scheduleFilter
+          )
+        );
+      },
+
+      scheduleError: function(message) {
+        return (
+          Components.pageHeader(
+            'Jadwal',
+            'Jadwal Pertandingan',
+            'Daftar round, tanggal, waktu, venue, dan status pertandingan.',
+            'calendar-days'
+          ) +
+          Components.emptyState(
+            'Jadwal gagal dimuat',
+            message,
+            'cloud-off'
+          )
+        );
+      },
+
+      results: function() {
+        return (
+          Components.pageHeader(
+            'Hasil',
+            'Hasil Pertandingan',
+            'Hanya pertandingan resmi berstatus PUBLISHED yang ditampilkan.',
+            'list-checks'
+          ) +
+          Phase9DComponents.resultsSkeleton()
+        );
+      },
+
+      renderResultsData: function(results) {
+        return (
+          Components.pageHeader(
+            'Hasil',
+            'Hasil Pertandingan',
+            'Hanya pertandingan resmi berstatus PUBLISHED yang ditampilkan.',
+            'list-checks'
+          ) +
+          Phase9DComponents.resultsList(results)
+        );
+      },
+
+      resultsError: function(message) {
+        return (
+          Components.pageHeader(
+            'Hasil',
+            'Hasil Pertandingan',
+            'Hanya pertandingan resmi berstatus PUBLISHED yang ditampilkan.',
+            'list-checks'
+          ) +
+          Components.emptyState(
+            'Hasil pertandingan gagal dimuat',
+            message,
+            'cloud-off'
+          )
+        );
+      },
+
+      match: function() {
+        return Phase9DComponents.matchDetailSkeleton();
+      },
+
+      renderMatchData: function(data) {
+        return Phase9DComponents.matchDetail(data);
+      },
+
+      matchError: function(message) {
+        return Phase9DComponents.matchDetailError(message);
+      },
+
+      teams: function() {
+        return (
+          Components.pageHeader(
+            'Tim',
+            'Tim Peserta',
+            'Daftar tim, profil, posisi klasemen, dan roster pemain.',
+            'shield'
+          ) +
+          Components.emptyState(
+            'Tim disiapkan pada Phase 9E',
+            'Navigasi Tim ke Roster dan Player Detail akan menggunakan hash routing.',
+            'users'
+          )
+        );
+      },
+
+      statistics: function() {
+        return (
+          Components.pageHeader(
+            'Statistik',
+            'Statistik Kompetisi',
+            'Top Scorer dan MVP Ranking dihitung sepenuhnya oleh backend.',
+            'chart-no-axes-column-increasing'
+          ) +
+          Components.emptyState(
+            'Statistik disiapkan pada Phase 9F',
+            'Frontend tidak akan menghitung atau mengubah ranking dari backend.',
+            'chart-column'
+          )
+        );
+      },
+
+      login: function() {
+        return (
+          Components.pageHeader(
+            'Akses Internal',
+            'Login Runner dan Admin',
+            'Halaman login internal akan diimplementasikan pada Phase 10.',
+            'lock-keyhole'
+          ) +
+          Components.emptyState(
+            'Login internal belum diaktifkan',
+            'Frontend publik tetap dapat digunakan tanpa login.',
+            'shield-check'
+          )
+        );
+      },
+
+      notFound: function() {
+        return (
+          Components.pageHeader(
+            '404',
+            'Halaman Tidak Ditemukan',
+            'Route yang Anda buka tidak tersedia.',
+            'circle-alert'
+          ) +
+          '<a href="#/home" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">' +
+            '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+            'Kembali ke Home' +
+          '</a>'
+        );
+      }
+    };
+
+    const Router = {
+      routes: {
+        home: PublicViews.home,
+        standings: PublicViews.standings,
+        schedule: PublicViews.schedule,
+        results: PublicViews.results,
+        match: PublicViews.match,
+        teams: PublicViews.teams,
+        statistics: PublicViews.statistics,
+        login: PublicViews.login
+      },
+
+      resolve: function() {
+        const routePath = Utils.normalizeRoute(window.location.hash);
+        const segments = routePath.split('/');
+        const routeName = segments[0] || 'home';
+        const view = Router.routes[routeName] || PublicViews.notFound;
+
+        State.route = routeName;
+        State.routeParams = {
+          segments: segments.slice(1)
+        };
+
+        Elements.publicView.innerHTML = view(State.routeParams);
+        Router.updateNavigation();
+        Router.closeMobileNavigation();
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        lucide.createIcons();
+
+        if (routeName === 'home' && view === PublicViews.home) {
+          PublicAPI.loadHome();
+        } else if (
+          routeName === 'standings' &&
+          view === PublicViews.standings
+        ) {
+          PublicAPI.loadStandings();
+        } else if (
+          routeName === 'schedule' &&
+          view === PublicViews.schedule
+        ) {
+          PublicAPI.loadSchedule();
+        } else if (
+          routeName === 'results' &&
+          view === PublicViews.results
+        ) {
+          PublicAPI.loadResults();
+        } else if (
+          routeName === 'match' &&
+          view === PublicViews.match
+        ) {
+          const matchId = String(
+            State.routeParams.segments[0] || ''
+          ).trim().toUpperCase();
+
+          if (!/^M\d{3,}$/.test(matchId)) {
+            Elements.publicView.innerHTML =
+              PublicViews.matchError('Match ID pada URL tidak valid.');
+            lucide.createIcons();
+          } else {
+            PublicAPI.loadMatchDetail(matchId);
+          }
+        }
+      },
+
+      updateNavigation: function() {
+        document.querySelectorAll('[data-route-link]').forEach(function(link) {
+          const active = link.dataset.routeLink === State.route;
+
+          link.classList.toggle('is-active', active);
+
+          if (active) {
+            link.setAttribute('aria-current', 'page');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      },
+
+      toggleMobileNavigation: function() {
+        State.mobileMenuOpen = !State.mobileMenuOpen;
+        Elements.mobileNavigation.classList.toggle(
+          'hidden',
+          !State.mobileMenuOpen
+        );
+        Elements.mobileMenuButton.setAttribute(
+          'aria-expanded',
+          String(State.mobileMenuOpen)
+        );
+
+        const icon = Elements.mobileMenuButton.querySelector(
+          '.mobile-menu-icon'
+        );
+
+        icon.setAttribute(
+          'data-lucide',
+          State.mobileMenuOpen ? 'x' : 'menu'
+        );
+
+        lucide.createIcons();
+      },
+
+      closeMobileNavigation: function() {
+        State.mobileMenuOpen = false;
+        Elements.mobileNavigation.classList.add('hidden');
+        Elements.mobileMenuButton.setAttribute('aria-expanded', 'false');
+
+        const icon = Elements.mobileMenuButton.querySelector(
+          '.mobile-menu-icon'
+        );
+
+        icon.setAttribute('data-lucide', 'menu');
+      }
+    };
+
+    const PublicAPI = {
+      loadHome: async function(button) {
+        if (State.loading.route) {
+          return;
+        }
+
+        State.loading.route = true;
+        State.errors.route = '';
+
+        if (button) {
+          UI.setButtonLoading(button, true, 'Memuat...');
+        } else {
+          Elements.publicView.innerHTML = Components.homeSkeleton();
+          lucide.createIcons();
+        }
+
+        try {
+          const data = await API.post('publicBootstrap', {});
+
+          State.publicData.bootstrap = data;
+          State.publicData.standings = Array.isArray(data.standings)
+            ? data.standings
+            : [];
+          State.publicData.schedule = Array.isArray(data.nextMatches)
+            ? data.nextMatches
+            : [];
+          State.publicData.results = Array.isArray(data.latestResults)
+            ? data.latestResults
+            : [];
+          State.publicData.teams = Array.isArray(data.teams)
+            ? data.teams
+            : [];
+          State.publicData.topScorers = Array.isArray(data.topScorers)
+            ? data.topScorers
+            : [];
+          State.publicData.mvpRanking = Array.isArray(data.mvpLeaders)
+            ? data.mvpLeaders
+            : [];
+
+          if (State.route !== 'home') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderHomeData(State.publicData.bootstrap);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'home') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            Components.homeError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+
+          if (button && document.body.contains(button)) {
+            UI.setButtonLoading(button, false, '');
+          }
+        }
+      },
+
+      loadStandings: async function() {
+        State.loading.route = true;
+        State.errors.route = '';
+
+        try {
+          const data = await API.post('getStandings', {});
+          const standings = Array.isArray(data) ? data : [];
+
+          State.publicData.standings = standings;
+
+          if (State.route !== 'standings') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderStandingsData(standings);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'standings') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.standingsError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadSchedule: async function() {
+        State.loading.route = true;
+        State.errors.route = '';
+
+        try {
+          const data = await API.post('getSchedule', {});
+          const schedule = Array.isArray(data) ? data : [];
+
+          State.publicData.schedule = schedule;
+
+          if (State.route !== 'schedule') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderScheduleData(schedule);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'schedule') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.scheduleError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadResults: async function() {
+        State.loading.route = true;
+        State.errors.route = '';
+
+        try {
+          const data = await API.post('getResults', {});
+          const results = Array.isArray(data) ? data : [];
+
+          State.publicData.results = results;
+
+          if (State.route !== 'results') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderResultsData(results);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'results') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.resultsError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadMatchDetail: async function(matchId) {
+        State.loading.route = true;
+        State.errors.route = '';
+
+        Elements.publicView.innerHTML =
+          Phase9DComponents.matchDetailSkeleton();
+        lucide.createIcons();
+
+        try {
+          let data = State.publicData.matchDetails[matchId];
+
+          if (!data) {
+            data = await API.post('getMatchDetail', {
+              match_id: matchId
+            });
+
+            State.publicData.matchDetails[matchId] = data;
+          }
+
+          if (
+            State.route !== 'match' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              matchId
+          ) {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderMatchData(data);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (
+            State.route !== 'match' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              matchId
+          ) {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.matchError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      checkHealth: async function(button) {
+        if (State.loading.apiHealth) {
+          return;
+        }
+
+        State.loading.apiHealth = true;
+        State.errors.apiHealth = '';
+        UI.updateApiStatus('checking');
+        UI.setButtonLoading(button, true, 'Memeriksa...');
+
+        try {
+          const data = await API.post('apiHealth', {
+            source: 'phase_9a_public_frontend'
+          });
+
+          UI.updateApiStatus(
+            data.status === 'READY' ? 'online' : 'offline'
+          );
+
+          UI.showModal(
+            'Status API',
+            data.status === 'READY'
+              ? 'Frontend berhasil terhubung ke Google Apps Script dan database siap digunakan.'
+              : 'API dapat dihubungi, tetapi database belum siap. Jalankan setupDatabase().'
+          );
+
+          UI.showToast(
+            data.status === 'READY'
+              ? 'Koneksi API berhasil.'
+              : 'API terhubung, database belum siap.',
+            data.status === 'READY' ? 'success' : 'error'
+          );
+        } catch (error) {
+          State.errors.apiHealth = error.message;
+          UI.updateApiStatus('offline');
+          UI.showModal(
+            'Koneksi API Gagal',
+            error.message
+          );
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.apiHealth = false;
+          UI.setButtonLoading(button, false, '');
+        }
+      }
+    };
+
+    Elements.publicTestButton.addEventListener('click', async function() {
+      UI.setButtonLoading(
+        Elements.publicTestButton,
+        true,
+        'Menghubungkan...'
+      );
+
+      try {
+        const data = await API.post('publicTest', {
+          source: 'external_frontend',
+          test: 'phase_0_public'
+        });
+
+        UI.showResult(Elements.publicResult, data);
+        UI.showToast('Public API dan Google Sheets berhasil terhubung.', 'success');
+      } catch (error) {
+        UI.showResult(Elements.publicResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.publicTestButton, false, '');
+      }
+    });
+
+    Elements.loginForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const password = document.getElementById('password').value;
+
+      UI.setButtonLoading(Elements.loginButton, true, 'Memvalidasi...');
+
+      try {
+        const data = await API.post('login', {
+          password: password
+        });
+
+        State.token = data.token;
+        State.role = data.role;
+
+        sessionStorage.setItem('ybm_session_token', State.token);
+        sessionStorage.setItem('ybm_session_role', State.role);
+
+        Elements.loginForm.reset();
+        UI.updateSessionStatus();
+        UI.showResult(Elements.loginResult, {
+          role: data.role,
+          expiresAt: data.expiresAt,
+          tokenReceived: Boolean(data.token)
+        });
+        UI.showToast('Login berhasil sebagai ' + data.role + '.', 'success');
+      } catch (error) {
+        UI.showResult(Elements.loginResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.loginButton, false, '');
+      }
+    });
+
+    Elements.protectedTestButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast('Login terlebih dahulu untuk menjalankan test ini.', 'error');
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.protectedTestButton,
+        true,
+        'Memvalidasi...'
+      );
+
+      try {
+        const data = await API.post(
+          'protectedTest',
+          {
+            source: 'external_frontend',
+            test: 'phase_0_protected'
+          },
+          State.token
+        );
+
+        UI.showResult(Elements.protectedResult, data);
+        UI.showToast('Protected API berhasil divalidasi.', 'success');
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.protectedResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.protectedTestButton, false, '');
+      }
+    });
+
+    Elements.logoutButton.addEventListener('click', async function() {
+      UI.setButtonLoading(Elements.logoutButton, true, 'Menghapus...');
+
+      try {
+        if (State.token) {
+          await API.post('logout', {}, State.token);
+        }
+
+        Utils.clearSession();
+        Elements.protectedResult.classList.add('hidden');
+        UI.showToast('Session berhasil dihapus.', 'success');
+      } catch (error) {
+        Utils.clearSession();
+        UI.showToast('Session lokal telah dihapus.', 'success');
+      } finally {
+        UI.setButtonLoading(Elements.logoutButton, false, '');
+      }
+    });
+
+    Elements.databaseHealthButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast(
+          'Login terlebih dahulu untuk memeriksa master database.',
+          'error'
+        );
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.databaseHealthButton,
+        true,
+        'Memeriksa...'
+      );
+
+      try {
+        const data = await API.post(
+          'databaseHealth',
+          {},
+          State.token
+        );
+
+        UI.showResult(Elements.databaseHealthResult, data);
+
+        if (data.database.ready && data.teams && data.teams.valid) {
+          UI.showToast(
+            'Schema dan ID tim T001–T008 sudah valid.',
+            'success'
+          );
+        } else {
+          UI.showToast(
+            'Schema atau ID tim belum lengkap. Jalankan setupDatabase().',
+            'error'
+          );
+        }
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.databaseHealthResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.databaseHealthButton, false, '');
+      }
+    });
+
+    Elements.masterDataButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast(
+          'Login terlebih dahulu untuk memeriksa master data.',
+          'error'
+        );
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.masterDataButton,
+        true,
+        'Memuat...'
+      );
+
+      try {
+        const data = await API.post(
+          'getMasterData',
+          {
+            type: 'ALL'
+          },
+          State.token
+        );
+
+        UI.showResult(Elements.masterDataResult, data);
+        UI.showToast(
+          'Master data Teams, Players, dan Matches berhasil dimuat.',
+          'success'
+        );
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.masterDataResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.masterDataButton, false, '');
+      }
+    });
+
+    Elements.runnerDashboardButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast(
+          'Login terlebih dahulu untuk membuka dashboard Runner.',
+          'error'
+        );
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.runnerDashboardButton,
+        true,
+        'Memuat...'
+      );
+
+      try {
+        const data = await API.post(
+          'getRunnerDashboard',
+          {},
+          State.token
+        );
+
+        UI.showResult(Elements.runnerReportResult, data);
+        UI.showToast('Dashboard Runner berhasil dimuat.', 'success');
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.runnerReportResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.runnerDashboardButton, false, '');
+      }
+    });
+
+    Elements.startReportButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast(
+          'Login terlebih dahulu untuk memulai laporan.',
+          'error'
+        );
+        return;
+      }
+
+      const matchId = Elements.runnerMatchId.value.trim().toUpperCase();
+
+      if (!matchId) {
+        UI.showToast('Match ID wajib diisi.', 'error');
+        Elements.runnerMatchId.focus();
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.startReportButton,
+        true,
+        'Memulai...'
+      );
+
+      try {
+        const data = await API.post(
+          'startMatchReport',
+          {
+            match_id: matchId
+          },
+          State.token
+        );
+
+        UI.showResult(Elements.runnerReportResult, data);
+        UI.showToast(
+          'Laporan ' + matchId + ' siap dilanjutkan.',
+          'success'
+        );
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.runnerReportResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.startReportButton, false, '');
+      }
+    });
+
+    Elements.phase3HealthButton.addEventListener('click', async function() {
+      if (!State.token) {
+        UI.showToast(
+          'Login terlebih dahulu untuk memeriksa Phase 3.',
+          'error'
+        );
+        return;
+      }
+
+      UI.setButtonLoading(
+        Elements.phase3HealthButton,
+        true,
+        'Memeriksa...'
+      );
+
+      try {
+        const data = await API.post(
+          'phase3Health',
+          {},
+          State.token
+        );
+
+        UI.showResult(Elements.phase3HealthResult, data);
+
+        if (data.ready && data.security.backendAuthorization) {
+          UI.showToast(
+            'Authentication, session, dan authorization Phase 3 aktif.',
+            'success'
+          );
+        } else {
+          UI.showToast(
+            'Konfigurasi Phase 3 belum lengkap.',
+            'error'
+          );
+        }
+      } catch (error) {
+        if (error.code === 'SESSION_EXPIRED') {
+          Utils.clearSession();
+        }
+
+        UI.showResult(Elements.phase3HealthResult, {
+          code: error.code || 'CLIENT_ERROR',
+          message: error.message
+        });
+        UI.showToast(error.message, 'error');
+      } finally {
+        UI.setButtonLoading(Elements.phase3HealthButton, false, '');
+      }
+    });
+
+    Elements.mobileMenuButton.addEventListener('click', function() {
+      Router.toggleMobileNavigation();
+    });
+
+    Elements.publicView.addEventListener('click', function(event) {
+      const retryButton = event.target.closest('#homeRetryButton');
+      const scheduleFilterButton = event.target.closest(
+        '[data-schedule-filter]'
+      );
+
+      if (retryButton) {
+        PublicAPI.loadHome(retryButton);
+      }
+
+      if (scheduleFilterButton && State.route === 'schedule') {
+        State.scheduleFilter = String(
+          scheduleFilterButton.dataset.scheduleFilter || 'ALL'
+        );
+
+        Elements.publicView.innerHTML =
+          PublicViews.renderScheduleData(State.publicData.schedule);
+        lucide.createIcons();
+      }
+    });
+
+    Elements.apiStatusButton.addEventListener('click', function() {
+      PublicAPI.checkHealth(Elements.apiStatusButton);
+    });
+
+    Elements.footerApiStatusButton.addEventListener('click', function() {
+      PublicAPI.checkHealth(Elements.footerApiStatusButton);
+    });
+
+    Elements.globalModalCloseButton.addEventListener('click', function() {
+      UI.closeModal();
+    });
+
+    Elements.globalModalActionButton.addEventListener('click', function() {
+      UI.closeModal();
+    });
+
+    Elements.globalModal.addEventListener('click', function(event) {
+      if (event.target === Elements.globalModal) {
+        UI.closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (
+        event.key === 'Escape' &&
+        !Elements.globalModal.classList.contains('hidden')
+      ) {
+        UI.closeModal();
+      }
+    });
+
+    window.addEventListener('hashchange', function() {
+      Router.resolve();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!window.location.hash) {
+        window.location.replace('#/home');
+      }
+
+      lucide.createIcons();
+      UI.updateSessionStatus();
+      UI.updateApiStatus('idle');
+      Router.resolve();
+    });
   </script>
 </body>
 </html>
