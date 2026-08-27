@@ -115,6 +115,29 @@
       box-shadow: 0 18px 45px rgba(2, 6, 23, 0.18);
     }
 
+    :focus-visible {
+      outline: 3px solid rgba(52, 211, 153, 0.85);
+      outline-offset: 3px;
+    }
+
+    button,
+    a,
+    input,
+    select,
+    textarea {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    .image-fallback-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #64748b;
+    }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
@@ -160,6 +183,22 @@
     @keyframes skeletonSweep {
       100% {
         transform: translateX(100%);
+      }
+    }
+
+    @media (max-width: 359px) {
+      .public-nav-link {
+        padding-left: 0.625rem;
+        padding-right: 0.625rem;
+      }
+
+      #publicView {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      .public-card {
+        border-radius: 0.875rem;
       }
     }
 
@@ -322,6 +361,113 @@
         </div>
       </div>
     </footer>
+  </div>
+
+  <div id="internalApp" class="hidden min-h-screen bg-slate-950">
+    <div class="min-h-screen lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <aside
+        id="internalSidebar"
+        class="hidden border-r border-slate-800 bg-slate-900/80 lg:block"
+      >
+        <div class="sticky top-0 flex h-screen flex-col">
+          <div class="flex min-h-16 items-center gap-3 border-b border-slate-800 px-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-slate-950">
+              <i data-lucide="trophy" class="h-5 w-5"></i>
+            </span>
+
+            <div class="min-w-0">
+              <p class="truncate font-black text-white">
+                YBM Internal
+              </p>
+              <p
+                id="internalSidebarRole"
+                class="text-xs font-semibold text-emerald-400"
+              >
+                Internal
+              </p>
+            </div>
+          </div>
+
+          <nav
+            id="internalDesktopNavigation"
+            class="flex-1 space-y-1 overflow-y-auto p-4"
+            aria-label="Navigasi internal"
+          ></nav>
+
+          <div class="border-t border-slate-800 p-4">
+            <a
+              href="#/home"
+              class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            >
+              <i data-lucide="globe-2" class="h-5 w-5"></i>
+              Website Publik
+            </a>
+
+            <button
+              type="button"
+              data-internal-logout
+              class="mt-1 flex min-h-11 w-full items-center gap-3 rounded-xl px-3 font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <i data-lucide="log-out" class="button-icon h-5 w-5"></i>
+              <span class="button-label">Logout</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="min-w-0">
+        <header class="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
+          <div class="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+            <div class="flex min-w-0 items-center gap-3">
+              <button
+                id="internalMobileMenuButton"
+                type="button"
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-700 text-slate-300 transition hover:bg-slate-800 lg:hidden"
+                aria-label="Buka menu internal"
+                aria-controls="internalMobileNavigation"
+                aria-expanded="false"
+              >
+                <i data-lucide="menu" class="internal-mobile-menu-icon h-5 w-5"></i>
+              </button>
+
+              <div class="min-w-0">
+                <p
+                  id="internalPageTitle"
+                  class="truncate font-black text-white"
+                >
+                  Dashboard
+                </p>
+                <p
+                  id="internalHeaderRole"
+                  class="text-xs font-semibold text-slate-500"
+                >
+                  Internal
+                </p>
+              </div>
+            </div>
+
+            <span
+              id="internalSessionBadge"
+              class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300"
+            >
+              Session aktif
+            </span>
+          </div>
+
+          <nav
+            id="internalMobileNavigation"
+            class="hidden border-t border-slate-800 bg-slate-950 p-4 lg:hidden"
+            aria-label="Navigasi internal mobile"
+          ></nav>
+        </header>
+
+        <main
+          id="internalView"
+          class="mx-auto min-h-[calc(100vh-4rem)] max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
+          aria-live="polite"
+        ></main>
+      </div>
+    </div>
   </div>
 
   <div
@@ -659,17 +805,26 @@
 
   <script>
     const Config = {
-      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec'
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec',
+      REQUEST_TIMEOUT_MS: 15000,
+      PUBLIC_READ_RETRY_COUNT: 1,
+      PUBLIC_READ_RETRY_DELAY_MS: 700
     };
 
     const State = {
       token: sessionStorage.getItem('ybm_session_token') || '',
       role: sessionStorage.getItem('ybm_session_role') || '',
+      sessionExpiresAt:
+        sessionStorage.getItem('ybm_session_expires_at') || '',
+      sessionValidated: false,
+      permissions: [],
       route: 'home',
       routeParams: {},
       mobileMenuOpen: false,
+      internalMobileMenuOpen: false,
       apiStatus: 'idle',
       scheduleFilter: 'ALL',
+      statisticsTab: 'TOP_SCORER',
       publicData: {
         bootstrap: null,
         standings: [],
@@ -678,15 +833,22 @@
         teams: [],
         topScorers: [],
         mvpRanking: [],
-        matchDetails: {}
+        matchDetails: {},
+        teamDetails: {},
+        playerDetails: {}
       },
       loading: {
         route: false,
-        apiHealth: false
+        apiHealth: false,
+        authentication: false,
+        sessionValidation: false,
+        logout: false
       },
       errors: {
         route: '',
-        apiHealth: ''
+        apiHealth: '',
+        authentication: '',
+        sessionValidation: ''
       }
     };
 
@@ -694,6 +856,15 @@
       toast: document.getElementById('toast'),
       publicApp: document.getElementById('publicApp'),
       publicView: document.getElementById('publicView'),
+      internalApp: document.getElementById('internalApp'),
+      internalView: document.getElementById('internalView'),
+      internalSidebarRole: document.getElementById('internalSidebarRole'),
+      internalHeaderRole: document.getElementById('internalHeaderRole'),
+      internalPageTitle: document.getElementById('internalPageTitle'),
+      internalSessionBadge: document.getElementById('internalSessionBadge'),
+      internalDesktopNavigation: document.getElementById('internalDesktopNavigation'),
+      internalMobileNavigation: document.getElementById('internalMobileNavigation'),
+      internalMobileMenuButton: document.getElementById('internalMobileMenuButton'),
       desktopNavigation: document.getElementById('desktopNavigation'),
       mobileNavigation: document.getElementById('mobileNavigation'),
       mobileMenuButton: document.getElementById('mobileMenuButton'),
@@ -728,18 +899,68 @@
     };
 
     const API = {
-      post: async function(action, payload, token) {
-        const response = await fetch(Config.SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify({
-            action: action,
-            token: token || '',
-            payload: payload || {}
-          })
+      safeRetryActions: [
+        'apiHealth',
+        'publicBootstrap',
+        'getStandings',
+        'getSchedule',
+        'getResults',
+        'getMatchDetail',
+        'getTeams',
+        'getTeamDetail',
+        'getPlayerDetail',
+        'getTopScorers',
+        'getMvpRanking'
+      ],
+
+      delay: function(milliseconds) {
+        return new Promise(function(resolve) {
+          window.setTimeout(resolve, milliseconds);
         });
+      },
+
+      executePost: async function(action, payload, token) {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(function() {
+          controller.abort();
+        }, Config.REQUEST_TIMEOUT_MS);
+
+        let response;
+
+        try {
+          response = await fetch(Config.SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+              action: action,
+              token: token || '',
+              payload: payload || {}
+            }),
+            signal: controller.signal
+          });
+        } catch (error) {
+          if (error && error.name === 'AbortError') {
+            const timeoutError = new Error(
+              'Waktu koneksi ke server habis. Silakan coba kembali.'
+            );
+
+            timeoutError.code = 'REQUEST_TIMEOUT';
+            throw timeoutError;
+          }
+
+          const networkError = new Error(
+            navigator.onLine
+              ? 'Tidak dapat terhubung ke server. Periksa koneksi lalu coba kembali.'
+              : 'Perangkat sedang offline. Periksa koneksi internet.'
+          );
+
+          networkError.code = 'NETWORK_ERROR';
+          throw networkError;
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
 
         const text = await response.text();
         let result;
@@ -747,9 +968,22 @@
         try {
           result = JSON.parse(text);
         } catch (error) {
-          throw new Error(
+          const parseError = new Error(
             'Response backend bukan JSON valid. Periksa deployment GAS.'
           );
+
+          parseError.code = 'INVALID_RESPONSE';
+          throw parseError;
+        }
+
+        if (!response.ok) {
+          const httpError = new Error(
+            result.message ||
+            'Server mengembalikan HTTP ' + response.status + '.'
+          );
+
+          httpError.code = result.code || 'HTTP_ERROR';
+          throw httpError;
         }
 
         if (!result.ok) {
@@ -762,6 +996,44 @@
         }
 
         return result.data;
+      },
+
+      post: async function(action, payload, token) {
+        const retryAllowed =
+          !token &&
+          API.safeRetryActions.indexOf(action) !== -1;
+        const maximumAttempts = retryAllowed
+          ? Config.PUBLIC_READ_RETRY_COUNT + 1
+          : 1;
+        let lastError;
+
+        for (
+          let attempt = 1;
+          attempt <= maximumAttempts;
+          attempt += 1
+        ) {
+          try {
+            return await API.executePost(action, payload, token);
+          } catch (error) {
+            lastError = error;
+
+            const retryable =
+              error.code === 'NETWORK_ERROR' ||
+              error.code === 'REQUEST_TIMEOUT' ||
+              error.code === 'HTTP_ERROR' ||
+              error.code === 'INVALID_RESPONSE';
+
+            if (!retryable || attempt >= maximumAttempts) {
+              throw error;
+            }
+
+            await API.delay(
+              Config.PUBLIC_READ_RETRY_DELAY_MS * attempt
+            );
+          }
+        }
+
+        throw lastError;
       }
     };
 
@@ -770,16 +1042,41 @@
         const icon = button.querySelector('.button-icon');
         const label = button.querySelector('.button-label');
 
+        if (!button) {
+          return;
+        }
+
         button.disabled = loading;
+        button.setAttribute('aria-busy', String(loading));
 
         if (loading) {
-          button.dataset.originalLabel = label.textContent;
-          icon.setAttribute('data-lucide', 'loader-circle');
-          icon.classList.add('animate-spin');
-          label.textContent = loadingText;
+          if (label) {
+            button.dataset.originalLabel = label.textContent;
+            label.textContent = loadingText;
+          }
+
+          if (icon) {
+            button.dataset.originalIcon =
+              icon.getAttribute('data-lucide') || '';
+            icon.setAttribute('data-lucide', 'loader-circle');
+            icon.classList.add('animate-spin');
+          }
         } else {
-          icon.classList.remove('animate-spin');
-          label.textContent = button.dataset.originalLabel || label.textContent;
+          if (label) {
+            label.textContent =
+              button.dataset.originalLabel || label.textContent;
+          }
+
+          if (icon) {
+            icon.classList.remove('animate-spin');
+
+            if (button.dataset.originalIcon) {
+              icon.setAttribute(
+                'data-lucide',
+                button.dataset.originalIcon
+              );
+            }
+          }
         }
 
         lucide.createIcons();
@@ -825,16 +1122,52 @@
       },
 
       showModal: function(title, message) {
+        UI.modalPreviousFocus = document.activeElement;
+        UI.modalConfirmCallback = null;
         Elements.globalModalTitle.textContent = title;
         Elements.globalModalMessage.textContent = message;
+        Elements.globalModalActionButton.textContent = 'Tutup';
+        Elements.globalModalActionButton.className =
+          'min-h-11 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500';
         Elements.globalModal.classList.remove('hidden');
         Elements.globalModal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        Elements.globalModalActionButton.focus();
+      },
+
+      showConfirm: function(title, message, actionLabel, callback) {
+        UI.modalPreviousFocus = document.activeElement;
+        UI.modalConfirmCallback = callback;
+        Elements.globalModalTitle.textContent = title;
+        Elements.globalModalMessage.textContent = message;
+        Elements.globalModalActionButton.textContent =
+          actionLabel || 'Lanjutkan';
+        Elements.globalModalActionButton.className =
+          'min-h-11 rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60';
+        Elements.globalModal.classList.remove('hidden');
+        Elements.globalModal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
         Elements.globalModalActionButton.focus();
       },
 
       closeModal: function() {
         Elements.globalModal.classList.add('hidden');
         Elements.globalModal.classList.remove('flex');
+        Elements.globalModalActionButton.textContent = 'Tutup';
+        Elements.globalModalActionButton.className =
+          'min-h-11 rounded-xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500';
+        UI.modalConfirmCallback = null;
+        document.body.style.overflow = '';
+
+        if (
+          UI.modalPreviousFocus &&
+          document.body.contains(UI.modalPreviousFocus) &&
+          typeof UI.modalPreviousFocus.focus === 'function'
+        ) {
+          UI.modalPreviousFocus.focus();
+        }
+
+        UI.modalPreviousFocus = null;
       },
 
       updateApiStatus: function(status) {
@@ -2094,7 +2427,16 @@
                       'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
                       'allowfullscreen' +
                     '></iframe>' +
-                  '</div>'
+                  '</div>' +
+                  '<a ' +
+                    'href="' + Utils.escapeHtml(youtubeUrl) + '" ' +
+                    'target="_blank" ' +
+                    'rel="noopener noreferrer" ' +
+                    'class="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white"' +
+                  '>' +
+                    '<i data-lucide="external-link" class="h-4 w-4"></i>' +
+                    'Buka langsung di YouTube' +
+                  '</a>'
                 : Components.compactEmptyState(
                     'Video belum tersedia',
                     'URL YouTube belum ditambahkan untuk pertandingan ini.',
@@ -2156,6 +2498,936 @@
       }
     };
 
+    const Phase9EComponents = {
+      teamsSkeleton: function() {
+        return (
+          '<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Memuat tim">' +
+            [1, 2, 3, 4, 5, 6, 7, 8].map(function() {
+              return (
+                '<article class="public-card route-enter p-5">' +
+                  '<div class="skeleton mx-auto h-20 w-20 rounded-2xl"></div>' +
+                  '<div class="skeleton mx-auto mt-5 h-6 w-3/4 rounded"></div>' +
+                  '<div class="skeleton mx-auto mt-3 h-4 w-20 rounded"></div>' +
+                  '<div class="skeleton mt-6 h-11 w-full rounded-xl"></div>' +
+                '</article>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      teamLogo: function(team, sizeClasses) {
+        const data = team || {};
+        const classes = sizeClasses || 'h-20 w-20';
+
+        return (
+          '<span class="flex ' +
+            classes +
+            ' shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-800 text-slate-400">' +
+            (
+              data.logo_url
+                ? '<img src="' +
+                    Utils.escapeHtml(data.logo_url) +
+                    '" alt="Logo ' +
+                    Utils.escapeHtml(data.team_name || data.team_id || 'tim') +
+                    '" class="h-full w-full object-cover">'
+                : '<i data-lucide="shield" class="h-9 w-9"></i>'
+            ) +
+          '</span>'
+        );
+      },
+
+      playerPhoto: function(player, sizeClasses) {
+        const data = player || {};
+        const classes = sizeClasses || 'h-12 w-12';
+
+        return (
+          '<span class="flex ' +
+            classes +
+            ' shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800 text-slate-400">' +
+            (
+              data.photo_url
+                ? '<img src="' +
+                    Utils.escapeHtml(data.photo_url) +
+                    '" alt="Foto ' +
+                    Utils.escapeHtml(
+                      data.player_name || data.player_id || 'pemain'
+                    ) +
+                    '" class="h-full w-full object-cover">'
+                : '<i data-lucide="user-round" class="h-6 w-6"></i>'
+            ) +
+          '</span>'
+        );
+      },
+
+      teamCard: function(team) {
+        return (
+          '<article class="public-card route-enter flex flex-col p-5 text-center">' +
+            '<div class="mx-auto">' +
+              Phase9EComponents.teamLogo(team, 'h-20 w-20') +
+            '</div>' +
+            '<h2 class="mt-5 truncate text-lg font-black text-white">' +
+              Utils.escapeHtml(team.team_name || team.team_id || 'Tim') +
+            '</h2>' +
+            '<p class="mt-1 text-sm font-semibold text-slate-500">' +
+              Utils.escapeHtml(team.short_name || team.team_id || '') +
+            '</p>' +
+            (
+              team.coach_name
+                ? '<p class="mt-4 truncate text-sm text-slate-400">' +
+                    '<span class="text-slate-500">Pelatih:</span> ' +
+                    Utils.escapeHtml(team.coach_name) +
+                  '</p>'
+                : '<div class="mt-4"></div>'
+            ) +
+            '<a href="#/team/' +
+              Utils.escapeHtml(team.team_id) +
+              '" class="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 font-semibold text-white transition hover:bg-emerald-500">' +
+              '<i data-lucide="users-round" class="h-5 w-5"></i>' +
+              'Lihat Tim' +
+            '</a>' +
+          '</article>'
+        );
+      },
+
+      teamsList: function(teams) {
+        const rows = Array.isArray(teams) ? teams : [];
+
+        if (rows.length === 0) {
+          return Components.emptyState(
+            'Tim belum tersedia',
+            'Daftar tim peserta belum tersedia pada Public Snapshot.',
+            'shield-off'
+          );
+        }
+
+        return (
+          '<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">' +
+            rows.map(function(team) {
+              return Phase9EComponents.teamCard(team);
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      detailSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<div class="skeleton mb-6 h-11 w-40 rounded-xl"></div>' +
+            '<section class="public-card p-5 sm:p-8">' +
+              '<div class="flex flex-col gap-5 sm:flex-row sm:items-center">' +
+                '<div class="skeleton h-24 w-24 shrink-0 rounded-2xl"></div>' +
+                '<div class="min-w-0 flex-1">' +
+                  '<div class="skeleton h-7 w-2/3 rounded"></div>' +
+                  '<div class="skeleton mt-3 h-4 w-28 rounded"></div>' +
+                  '<div class="skeleton mt-5 h-4 w-full max-w-xl rounded"></div>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+            '<section class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">' +
+              [1, 2, 3, 4, 5, 6, 7, 8].map(function() {
+                return (
+                  '<div class="public-card p-4 text-center">' +
+                    '<div class="skeleton mx-auto h-7 w-10 rounded"></div>' +
+                    '<div class="skeleton mx-auto mt-3 h-3 w-14 rounded"></div>' +
+                  '</div>'
+                );
+              }).join('') +
+            '</section>' +
+            '<section class="public-card mt-6 p-5 sm:p-6">' +
+              '<div class="skeleton h-6 w-32 rounded"></div>' +
+              '<div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">' +
+                [1, 2, 3, 4, 5, 6].map(function() {
+                  return '<div class="skeleton h-20 rounded-xl"></div>';
+                }).join('') +
+              '</div>' +
+            '</section>' +
+          '</div>'
+        );
+      },
+
+      statisticCard: function(label, value, icon, accentClasses) {
+        return (
+          '<article class="public-card p-4 text-center">' +
+            '<span class="mx-auto flex h-9 w-9 items-center justify-center rounded-xl ' +
+              accentClasses +
+            '">' +
+              '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-4 w-4"></i>' +
+            '</span>' +
+            '<p class="mt-3 text-xl font-black text-white">' +
+              Utils.escapeHtml(value === undefined || value === '' ? 0 : value) +
+            '</p>' +
+            '<p class="mt-1 text-xs font-semibold text-slate-500">' +
+              Utils.escapeHtml(label) +
+            '</p>' +
+          '</article>'
+        );
+      },
+
+      teamHeader: function(team, standing) {
+        const data = team || {};
+        const table = standing || {};
+        const position = table.position || '-';
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-8">' +
+            '<div class="flex flex-col gap-5 sm:flex-row sm:items-center">' +
+              Phase9EComponents.teamLogo(data, 'h-24 w-24') +
+              '<div class="min-w-0 flex-1">' +
+                '<div class="flex flex-wrap items-center gap-3">' +
+                  '<h1 class="text-2xl font-black text-white sm:text-3xl">' +
+                    Utils.escapeHtml(data.team_name || data.team_id || 'Tim') +
+                  '</h1>' +
+                  '<span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">' +
+                    'Posisi ' + Utils.escapeHtml(position) +
+                  '</span>' +
+                '</div>' +
+                '<p class="mt-2 font-semibold text-slate-500">' +
+                  Utils.escapeHtml(data.short_name || data.team_id || '') +
+                '</p>' +
+                (
+                  data.description
+                    ? '<p class="mt-4 max-w-2xl text-sm leading-6 text-slate-400">' +
+                        Utils.escapeHtml(data.description) +
+                      '</p>'
+                    : ''
+                ) +
+                '<div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-400">' +
+                  (
+                    data.coach_name
+                      ? '<span class="inline-flex items-center gap-2">' +
+                          '<i data-lucide="clipboard-user" class="h-4 w-4 text-emerald-400"></i>' +
+                          'Pelatih: ' + Utils.escapeHtml(data.coach_name) +
+                        '</span>'
+                      : ''
+                  ) +
+                  (
+                    data.manager_name
+                      ? '<span class="inline-flex items-center gap-2">' +
+                          '<i data-lucide="briefcase-business" class="h-4 w-4 text-emerald-400"></i>' +
+                          'Manager: ' + Utils.escapeHtml(data.manager_name) +
+                        '</span>'
+                      : ''
+                  ) +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</section>'
+        );
+      },
+
+      teamStatistics: function(standing) {
+        const table = standing || {};
+
+        return (
+          '<section class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">' +
+            Phase9EComponents.statisticCard(
+              'Main',
+              table.played,
+              'calendar-check-2',
+              'bg-sky-500/10 text-sky-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Menang',
+              table.won,
+              'trophy',
+              'bg-emerald-500/10 text-emerald-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Seri',
+              table.draw,
+              'equal',
+              'bg-slate-700 text-slate-300'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Kalah',
+              table.lost,
+              'circle-x',
+              'bg-red-500/10 text-red-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Gol',
+              table.goals_for,
+              'goal',
+              'bg-violet-500/10 text-violet-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Kebobolan',
+              table.goals_against,
+              'shield-alert',
+              'bg-orange-500/10 text-orange-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Selisih',
+              table.goal_difference,
+              'plus-minus',
+              'bg-cyan-500/10 text-cyan-400'
+            ) +
+            Phase9EComponents.statisticCard(
+              'Poin',
+              table.points,
+              'star',
+              'bg-amber-500/10 text-amber-400'
+            ) +
+          '</section>'
+        );
+      },
+
+      rosterSection: function(roster) {
+        const players = Array.isArray(roster) ? roster : [];
+
+        return (
+          '<section class="public-card route-enter mt-6 p-5 sm:p-6">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3">' +
+              '<div>' +
+                '<div class="flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+                  '<i data-lucide="users-round" class="h-5 w-5"></i>' +
+                  'Roster Pemain' +
+                '</div>' +
+                '<h2 class="mt-2 text-xl font-black text-white">' +
+                  'Daftar Pemain' +
+                '</h2>' +
+              '</div>' +
+              '<span class="rounded-full bg-slate-800 px-3 py-1 text-xs font-bold text-slate-300">' +
+                Utils.escapeHtml(players.length) + ' pemain' +
+              '</span>' +
+            '</div>' +
+            (
+              players.length === 0
+                ? Components.compactEmptyState(
+                    'Roster belum tersedia',
+                    'Belum ada pemain aktif pada tim ini.',
+                    'user-round-x'
+                  )
+                : '<div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">' +
+                    players.map(function(player) {
+                      return (
+                        '<a href="#/player/' +
+                          Utils.escapeHtml(player.player_id) +
+                          '" class="flex min-h-20 items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-3 transition hover:border-emerald-500/40 hover:bg-emerald-500/5">' +
+                          Phase9EComponents.playerPhoto(
+                            player,
+                            'h-12 w-12'
+                          ) +
+                          '<div class="min-w-0 flex-1">' +
+                            '<p class="truncate font-bold text-white">' +
+                              Utils.escapeHtml(
+                                player.player_name ||
+                                player.player_id ||
+                                'Pemain'
+                              ) +
+                            '</p>' +
+                            '<p class="mt-1 truncate text-xs text-slate-500">' +
+                              (
+                                player.jersey_number !== '' &&
+                                player.jersey_number !== undefined
+                                  ? 'No. ' +
+                                    Utils.escapeHtml(player.jersey_number) +
+                                    (player.position
+                                      ? ' · ' +
+                                        Utils.escapeHtml(player.position)
+                                      : '')
+                                  : Utils.escapeHtml(
+                                      player.position ||
+                                      player.player_id ||
+                                      ''
+                                    )
+                              ) +
+                            '</p>' +
+                          '</div>' +
+                          '<i data-lucide="chevron-right" class="h-5 w-5 shrink-0 text-slate-600"></i>' +
+                        '</a>'
+                      );
+                    }).join('') +
+                  '</div>'
+            ) +
+          '</section>'
+        );
+      },
+
+      teamDetail: function(data) {
+        const detail = data || {};
+        const team = detail.team || {};
+        const standing = detail.standing || {};
+        const roster = Array.isArray(detail.roster) ? detail.roster : [];
+
+        if (!team.team_id) {
+          return Components.emptyState(
+            'Detail tim tidak tersedia',
+            'Snapshot tim tidak berisi data tim.',
+            'file-question'
+          );
+        }
+
+        return (
+          '<div class="route-enter">' +
+            '<a href="#/teams" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              'Kembali ke Tim' +
+            '</a>' +
+            Phase9EComponents.teamHeader(team, standing) +
+            Phase9EComponents.teamStatistics(standing) +
+            Phase9EComponents.rosterSection(roster) +
+          '</div>'
+        );
+      },
+
+      playerDetailSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<div class="skeleton mb-6 h-11 w-44 rounded-xl"></div>' +
+            '<section class="public-card p-5 sm:p-8">' +
+              '<div class="flex flex-col gap-5 sm:flex-row sm:items-center">' +
+                '<div class="skeleton h-28 w-28 shrink-0 rounded-2xl"></div>' +
+                '<div class="min-w-0 flex-1">' +
+                  '<div class="skeleton h-7 w-2/3 rounded"></div>' +
+                  '<div class="skeleton mt-3 h-4 w-32 rounded"></div>' +
+                  '<div class="skeleton mt-5 h-4 w-48 rounded"></div>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+            '<section class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">' +
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function() {
+                return (
+                  '<div class="public-card p-4">' +
+                    '<div class="skeleton h-4 w-2/3 rounded"></div>' +
+                    '<div class="skeleton mt-4 h-7 w-1/2 rounded"></div>' +
+                  '</div>'
+                );
+              }).join('') +
+            '</section>' +
+          '</div>'
+        );
+      },
+
+      playerHeader: function(player) {
+        const data = player || {};
+
+        return (
+          '<section class="public-card route-enter p-5 sm:p-8">' +
+            '<div class="flex flex-col gap-5 sm:flex-row sm:items-center">' +
+              Phase9EComponents.playerPhoto(data, 'h-28 w-28') +
+              '<div class="min-w-0 flex-1">' +
+                '<div class="flex flex-wrap items-center gap-3">' +
+                  '<h1 class="text-2xl font-black text-white sm:text-3xl">' +
+                    Utils.escapeHtml(
+                      data.player_name || data.player_id || 'Pemain'
+                    ) +
+                  '</h1>' +
+                  (
+                    data.jersey_number !== '' &&
+                    data.jersey_number !== undefined
+                      ? '<span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">' +
+                          'No. ' + Utils.escapeHtml(data.jersey_number) +
+                        '</span>'
+                      : ''
+                  ) +
+                '</div>' +
+                '<a href="#/team/' +
+                  Utils.escapeHtml(data.team_id) +
+                  '" class="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl px-2 font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-emerald-300">' +
+                  '<i data-lucide="shield" class="h-5 w-5"></i>' +
+                  Utils.escapeHtml(
+                    data.team_name || data.team_id || 'Tim'
+                  ) +
+                '</a>' +
+                (
+                  data.position
+                    ? '<p class="mt-2 inline-flex items-center gap-2 text-sm text-slate-400">' +
+                        '<i data-lucide="map" class="h-4 w-4 text-emerald-400"></i>' +
+                        'Posisi: ' + Utils.escapeHtml(data.position) +
+                      '</p>'
+                    : ''
+                ) +
+              '</div>' +
+            '</div>' +
+          '</section>'
+        );
+      },
+
+      playerStatisticCard: function(label, value, icon, accentClasses) {
+        return (
+          '<article class="public-card route-enter p-4 sm:p-5">' +
+            '<div class="flex items-center justify-between gap-3">' +
+              '<span class="flex h-10 w-10 items-center justify-center rounded-xl ' +
+                accentClasses +
+              '">' +
+                '<i data-lucide="' + Utils.escapeHtml(icon) + '" class="h-5 w-5"></i>' +
+              '</span>' +
+              '<p class="text-2xl font-black text-white">' +
+                Utils.escapeHtml(
+                  value === undefined || value === ''
+                    ? 0
+                    : value
+                ) +
+              '</p>' +
+            '</div>' +
+            '<p class="mt-4 text-sm font-semibold text-slate-400">' +
+              Utils.escapeHtml(label) +
+            '</p>' +
+          '</article>'
+        );
+      },
+
+      playerStatistics: function(statistics) {
+        const data = statistics || {};
+
+        return (
+          '<section class="mt-6">' +
+            '<div class="mb-4 flex items-center gap-2 text-sm font-semibold text-emerald-400">' +
+              '<i data-lucide="chart-no-axes-column-increasing" class="h-5 w-5"></i>' +
+              'Statistik Pemain' +
+            '</div>' +
+            '<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">' +
+              Phase9EComponents.playerStatisticCard(
+                'Penampilan',
+                data.appearances,
+                'calendar-check-2',
+                'bg-sky-500/10 text-sky-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Gol',
+                data.goals,
+                'goal',
+                'bg-emerald-500/10 text-emerald-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Average Rating',
+                Utils.formatDecimal(data.average_rating),
+                'star',
+                'bg-amber-500/10 text-amber-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Match MVP',
+                data.match_mvp_count,
+                'award',
+                'bg-violet-500/10 text-violet-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Kartu Kuning',
+                data.yellow_cards,
+                'badge-alert',
+                'bg-yellow-500/10 text-yellow-300'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Kartu Merah',
+                data.red_cards,
+                'badge-x',
+                'bg-red-500/10 text-red-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'MVP Index',
+                Utils.formatDecimal(data.mvp_index),
+                'medal',
+                'bg-orange-500/10 text-orange-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Average Performance',
+                Utils.formatDecimal(data.average_performance),
+                'activity',
+                'bg-cyan-500/10 text-cyan-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Average Adab',
+                Utils.formatDecimal(data.average_adab),
+                'heart-handshake',
+                'bg-pink-500/10 text-pink-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Average Motivator',
+                Utils.formatDecimal(data.average_motivator),
+                'megaphone',
+                'bg-lime-500/10 text-lime-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Gol per Penampilan',
+                Utils.formatDecimal(data.goals_per_appearance),
+                'crosshair',
+                'bg-teal-500/10 text-teal-400'
+              ) +
+              Phase9EComponents.playerStatisticCard(
+                'Team ID',
+                data.team_id || '-',
+                'shield',
+                'bg-slate-700 text-slate-300'
+              ) +
+            '</div>' +
+          '</section>'
+        );
+      },
+
+      playerDetail: function(data) {
+        const detail = data || {};
+        const player = detail.player || {};
+        const statistics = detail.statistics || {};
+
+        if (!player.player_id) {
+          return Components.emptyState(
+            'Detail pemain tidak tersedia',
+            'Snapshot pemain tidak berisi data pemain.',
+            'file-question'
+          );
+        }
+
+        return (
+          '<div class="route-enter">' +
+            '<a href="#/team/' +
+              Utils.escapeHtml(player.team_id) +
+              '" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              'Kembali ke Tim' +
+            '</a>' +
+            Phase9EComponents.playerHeader(player) +
+            Phase9EComponents.playerStatistics(statistics) +
+          '</div>'
+        );
+      },
+
+      detailError: function(backUrl, backLabel, title, message) {
+        return (
+          '<div class="route-enter">' +
+            '<a href="' +
+              Utils.escapeHtml(backUrl) +
+              '" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-700 px-4 font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              Utils.escapeHtml(backLabel) +
+            '</a>' +
+            Components.emptyState(
+              title,
+              message,
+              'cloud-off'
+            ) +
+          '</div>'
+        );
+      }
+    };
+
+    const Phase9FComponents = {
+      tabs: function(activeTab) {
+        const tabs = [
+          {
+            value: 'TOP_SCORER',
+            label: 'Top Scorer',
+            icon: 'goal'
+          },
+          {
+            value: 'MVP_RANKING',
+            label: 'MVP Ranking',
+            icon: 'award'
+          }
+        ];
+
+        return (
+          '<div class="mb-6 flex rounded-xl border border-slate-800 bg-slate-900 p-1" role="tablist" aria-label="Kategori statistik">' +
+            tabs.map(function(tab) {
+              const active = tab.value === activeTab;
+
+              return (
+                '<button ' +
+                  'type="button" ' +
+                  'role="tab" ' +
+                  'data-statistics-tab="' + tab.value + '" ' +
+                  'aria-selected="' + String(active) + '" ' +
+                  'class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-bold transition ' +
+                    (
+                      active
+                        ? 'bg-emerald-600 text-white shadow-lg'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                    ) +
+                  '"' +
+                '>' +
+                  '<i data-lucide="' +
+                    Utils.escapeHtml(tab.icon) +
+                    '" class="h-5 w-5"></i>' +
+                  Utils.escapeHtml(tab.label) +
+                '</button>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      skeleton: function(activeTab) {
+        return (
+          '<div class="route-enter">' +
+            Phase9FComponents.tabs(activeTab) +
+            '<div class="public-card overflow-hidden">' +
+              '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4rem] gap-3 border-b border-slate-800 bg-slate-950/60 px-4 py-3 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_6rem_7rem_7rem] lg:px-5">' +
+                '<div class="skeleton h-4 rounded"></div>' +
+                '<div class="skeleton h-4 w-24 rounded"></div>' +
+                '<div class="hidden skeleton h-4 w-20 rounded lg:block"></div>' +
+                '<div class="hidden skeleton h-4 rounded lg:block"></div>' +
+                '<div class="hidden skeleton h-4 rounded lg:block"></div>' +
+                '<div class="skeleton h-4 rounded"></div>' +
+              '</div>' +
+              [1, 2, 3, 4, 5, 6, 7, 8].map(function() {
+                return (
+                  '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4rem] items-center gap-3 border-b border-slate-800 px-4 py-4 last:border-b-0 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_6rem_7rem_7rem] lg:px-5">' +
+                    '<div class="skeleton h-7 rounded-lg"></div>' +
+                    '<div class="flex items-center gap-3">' +
+                      '<div class="skeleton h-11 w-11 shrink-0 rounded-xl"></div>' +
+                      '<div class="min-w-0 flex-1">' +
+                        '<div class="skeleton h-4 w-3/4 rounded"></div>' +
+                        '<div class="skeleton mt-2 h-3 w-1/2 rounded"></div>' +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="hidden skeleton h-4 w-3/4 rounded lg:block"></div>' +
+                    '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                    '<div class="hidden skeleton h-5 rounded lg:block"></div>' +
+                    '<div class="skeleton h-6 rounded"></div>' +
+                  '</div>'
+                );
+              }).join('') +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      playerIdentity: function(player) {
+        return (
+          '<div class="flex min-w-0 items-center gap-3">' +
+            Phase9EComponents.playerPhoto(
+              player,
+              'h-11 w-11'
+            ) +
+            '<div class="min-w-0">' +
+              '<a href="#/player/' +
+                Utils.escapeHtml(player.player_id) +
+                '" class="block truncate font-bold text-white transition hover:text-emerald-300">' +
+                Utils.escapeHtml(
+                  player.player_name ||
+                  player.player_id ||
+                  'Pemain'
+                ) +
+              '</a>' +
+              '<p class="mt-1 truncate text-xs text-slate-500 lg:hidden">' +
+                Utils.escapeHtml(
+                  player.team_name ||
+                  player.team_id ||
+                  'Tim tidak tersedia'
+                ) +
+              '</p>' +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      rankBadge: function(rank) {
+        const rankNumber = Number(rank || 0);
+        let classes = 'bg-slate-800 text-slate-300';
+
+        if (rankNumber === 1) {
+          classes = 'bg-amber-500/10 text-amber-400';
+        } else if (rankNumber === 2) {
+          classes = 'bg-slate-700 text-slate-200';
+        } else if (rankNumber === 3) {
+          classes = 'bg-orange-500/10 text-orange-400';
+        }
+
+        return (
+          '<span class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 font-black ' +
+            classes +
+          '">' +
+            Utils.escapeHtml(rank || '-') +
+          '</span>'
+        );
+      },
+
+      topScorerTable: function(players) {
+        const rows = Array.isArray(players) ? players : [];
+
+        if (rows.length === 0) {
+          return Components.emptyState(
+            'Top Scorer belum tersedia',
+            'Ranking akan muncul setelah pertandingan resmi dipublikasikan.',
+            'goal'
+          );
+        }
+
+        return (
+          '<div class="public-card route-enter overflow-hidden">' +
+            '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4rem] gap-3 border-b border-slate-800 bg-slate-950/60 px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_7rem_7rem] lg:px-5">' +
+              '<span>Rank</span>' +
+              '<span class="text-left">Pemain</span>' +
+              '<span class="hidden text-left lg:block">Tim</span>' +
+              '<span class="hidden lg:block">Tampil</span>' +
+              '<span>Gol</span>' +
+            '</div>' +
+            rows.map(function(player, index) {
+              const rank = player.top_scorer_position || index + 1;
+
+              return (
+                '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4rem] items-center gap-3 border-b border-slate-800 px-4 py-4 text-center text-sm last:border-b-0 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_7rem_7rem] lg:px-5">' +
+                  '<div>' +
+                    Phase9FComponents.rankBadge(rank) +
+                  '</div>' +
+                  Phase9FComponents.playerIdentity(player) +
+                  '<a href="#/team/' +
+                    Utils.escapeHtml(player.team_id) +
+                    '" class="hidden truncate text-left font-semibold text-slate-400 transition hover:text-emerald-300 lg:block">' +
+                    Utils.escapeHtml(
+                      player.team_name ||
+                      player.team_id ||
+                      '-'
+                    ) +
+                  '</a>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(player.appearances || 0) +
+                  '</span>' +
+                  '<span class="text-xl font-black text-emerald-400">' +
+                    Utils.escapeHtml(player.goals || 0) +
+                  '</span>' +
+                '</div>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      mvpTable: function(players) {
+        const rows = Array.isArray(players) ? players : [];
+
+        if (rows.length === 0) {
+          return Components.emptyState(
+            'MVP Ranking belum tersedia',
+            'Ranking akan muncul setelah pertandingan resmi dipublikasikan.',
+            'award'
+          );
+        }
+
+        return (
+          '<div class="public-card route-enter overflow-hidden">' +
+            '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4.5rem] gap-3 border-b border-slate-800 bg-slate-950/60 px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_7rem_7rem_7rem_7rem] lg:px-5">' +
+              '<span>Rank</span>' +
+              '<span class="text-left">Pemain</span>' +
+              '<span class="hidden text-left lg:block">Tim</span>' +
+              '<span class="hidden lg:block">Rating</span>' +
+              '<span class="hidden lg:block">Tampil</span>' +
+              '<span class="hidden lg:block">Gol</span>' +
+              '<span>MVP</span>' +
+            '</div>' +
+            rows.map(function(player, index) {
+              const rank = player.mvp_position || index + 1;
+
+              return (
+                '<div class="grid grid-cols-[3rem_minmax(0,1fr)_4.5rem] items-center gap-3 border-b border-slate-800 px-4 py-4 text-center text-sm last:border-b-0 lg:grid-cols-[4rem_minmax(14rem,1fr)_minmax(10rem,0.7fr)_7rem_7rem_7rem_7rem] lg:px-5">' +
+                  '<div>' +
+                    Phase9FComponents.rankBadge(rank) +
+                  '</div>' +
+                  Phase9FComponents.playerIdentity(player) +
+                  '<a href="#/team/' +
+                    Utils.escapeHtml(player.team_id) +
+                    '" class="hidden truncate text-left font-semibold text-slate-400 transition hover:text-emerald-300 lg:block">' +
+                    Utils.escapeHtml(
+                      player.team_name ||
+                      player.team_id ||
+                      '-'
+                    ) +
+                  '</a>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(
+                      Utils.formatDecimal(player.average_rating)
+                    ) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(player.appearances || 0) +
+                  '</span>' +
+                  '<span class="hidden text-slate-300 lg:block">' +
+                    Utils.escapeHtml(player.goals || 0) +
+                  '</span>' +
+                  '<span class="text-lg font-black text-amber-400">' +
+                    Utils.escapeHtml(
+                      Utils.formatDecimal(player.mvp_index)
+                    ) +
+                  '</span>' +
+                '</div>'
+              );
+            }).join('') +
+          '</div>'
+        );
+      },
+
+      content: function(activeTab, topScorers, mvpRanking) {
+        return (
+          '<div class="route-enter">' +
+            Phase9FComponents.tabs(activeTab) +
+            (
+              activeTab === 'MVP_RANKING'
+                ? Phase9FComponents.mvpTable(mvpRanking)
+                : Phase9FComponents.topScorerTable(topScorers)
+            ) +
+          '</div>'
+        );
+      },
+
+      summary: function(activeTab, topScorers, mvpRanking) {
+        const topScorer = Array.isArray(topScorers) && topScorers.length > 0
+          ? topScorers[0]
+          : {};
+        const mvpLeader = Array.isArray(mvpRanking) && mvpRanking.length > 0
+          ? mvpRanking[0]
+          : {};
+        const activeLeader = activeTab === 'MVP_RANKING'
+          ? mvpLeader
+          : topScorer;
+        const value = activeTab === 'MVP_RANKING'
+          ? Utils.formatDecimal(activeLeader.mvp_index)
+          : activeLeader.goals || 0;
+
+        if (!activeLeader.player_id) {
+          return '';
+        }
+
+        return (
+          '<section class="public-card route-enter mb-6 overflow-hidden p-5 sm:p-6">' +
+            '<div class="flex flex-col gap-5 sm:flex-row sm:items-center">' +
+              '<span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400">' +
+                '<i data-lucide="' +
+                  (activeTab === 'MVP_RANKING' ? 'medal' : 'trophy') +
+                  '" class="h-7 w-7"></i>' +
+              '</span>' +
+              '<div class="min-w-0 flex-1">' +
+                '<p class="text-xs font-bold uppercase tracking-wide text-emerald-400">' +
+                  (
+                    activeTab === 'MVP_RANKING'
+                      ? 'Pemimpin MVP Ranking'
+                      : 'Pemimpin Top Scorer'
+                  ) +
+                '</p>' +
+                '<a href="#/player/' +
+                  Utils.escapeHtml(activeLeader.player_id) +
+                  '" class="mt-2 block truncate text-xl font-black text-white transition hover:text-emerald-300">' +
+                  Utils.escapeHtml(
+                    activeLeader.player_name ||
+                    activeLeader.player_id
+                  ) +
+                '</a>' +
+                '<p class="mt-1 truncate text-sm text-slate-400">' +
+                  Utils.escapeHtml(
+                    activeLeader.team_name ||
+                    activeLeader.team_id ||
+                    'Tim tidak tersedia'
+                  ) +
+                '</p>' +
+              '</div>' +
+              '<div class="shrink-0 text-left sm:text-right">' +
+                '<p class="text-3xl font-black text-amber-400">' +
+                  Utils.escapeHtml(value) +
+                '</p>' +
+                '<p class="text-xs font-bold uppercase tracking-wide text-slate-500">' +
+                  (
+                    activeTab === 'MVP_RANKING'
+                      ? 'MVP Index'
+                      : 'Gol'
+                  ) +
+                '</p>' +
+              '</div>' +
+            '</div>' +
+          '</section>'
+        );
+      }
+    };
+
     const Utils = {
       escapeHtml: function(value) {
         return String(value)
@@ -2166,12 +3438,63 @@
           .replace(/'/g, '&#039;');
       },
 
+      handleImageError: function(image) {
+        if (!image || image.dataset.fallbackApplied === 'true') {
+          return;
+        }
+
+        image.dataset.fallbackApplied = 'true';
+        image.classList.add('hidden');
+
+        const parent = image.parentElement;
+
+        if (!parent) {
+          return;
+        }
+
+        const fallbackIcon = document.createElement('i');
+        const altText = String(image.getAttribute('alt') || '').toLowerCase();
+        const iconName = altText.indexOf('foto') !== -1
+          ? 'user-round'
+          : 'shield';
+
+        fallbackIcon.setAttribute('data-lucide', iconName);
+        fallbackIcon.className = 'image-fallback-icon';
+        fallbackIcon.setAttribute('aria-hidden', 'true');
+        parent.appendChild(fallbackIcon);
+        lucide.createIcons();
+      },
+
       clearSession: function() {
         State.token = '';
         State.role = '';
+        State.sessionExpiresAt = '';
+        State.sessionValidated = false;
+        State.permissions = [];
         sessionStorage.removeItem('ybm_session_token');
         sessionStorage.removeItem('ybm_session_role');
+        sessionStorage.removeItem('ybm_session_expires_at');
         UI.updateSessionStatus();
+      },
+
+      getRoleLabel: function(role) {
+        const labels = {
+          RUNNER: 'Runner',
+          ADMIN: 'Admin',
+          SUPERADMIN: 'Superadmin'
+        };
+
+        return labels[String(role || '').toUpperCase()] || 'Internal';
+      },
+
+      getRoleDashboardRoute: function(role) {
+        const routes = {
+          RUNNER: '#/runner',
+          ADMIN: '#/admin',
+          SUPERADMIN: '#/superadmin'
+        };
+
+        return routes[String(role || '').toUpperCase()] || '#/login';
       },
 
       normalizeRoute: function(hash) {
@@ -2562,11 +3885,73 @@
             'Daftar tim, profil, posisi klasemen, dan roster pemain.',
             'shield'
           ) +
+          Phase9EComponents.teamsSkeleton()
+        );
+      },
+
+      renderTeamsData: function(teams) {
+        return (
+          Components.pageHeader(
+            'Tim',
+            'Tim Peserta',
+            'Daftar tim, profil, posisi klasemen, dan roster pemain.',
+            'shield'
+          ) +
+          Phase9EComponents.teamsList(teams)
+        );
+      },
+
+      teamsError: function(message) {
+        return (
+          Components.pageHeader(
+            'Tim',
+            'Tim Peserta',
+            'Daftar tim, profil, posisi klasemen, dan roster pemain.',
+            'shield'
+          ) +
           Components.emptyState(
-            'Tim disiapkan pada Phase 9E',
-            'Navigasi Tim ke Roster dan Player Detail akan menggunakan hash routing.',
-            'users'
+            'Daftar tim gagal dimuat',
+            message,
+            'cloud-off'
           )
+        );
+      },
+
+      team: function() {
+        return Phase9EComponents.detailSkeleton();
+      },
+
+      renderTeamData: function(data) {
+        return Phase9EComponents.teamDetail(data);
+      },
+
+      teamError: function(message) {
+        return Phase9EComponents.detailError(
+          '#/teams',
+          'Kembali ke Tim',
+          'Detail tim gagal dimuat',
+          message
+        );
+      },
+
+      player: function() {
+        return Phase9EComponents.playerDetailSkeleton();
+      },
+
+      renderPlayerData: function(data) {
+        return Phase9EComponents.playerDetail(data);
+      },
+
+      playerError: function(message, teamId) {
+        const backUrl = teamId
+          ? '#/team/' + teamId
+          : '#/teams';
+
+        return Phase9EComponents.detailError(
+          backUrl,
+          'Kembali ke Tim',
+          'Detail pemain gagal dimuat',
+          message
         );
       },
 
@@ -2578,27 +3963,105 @@
             'Top Scorer dan MVP Ranking dihitung sepenuhnya oleh backend.',
             'chart-no-axes-column-increasing'
           ) +
+          Phase9FComponents.skeleton(State.statisticsTab)
+        );
+      },
+
+      renderStatisticsData: function() {
+        return (
+          Components.pageHeader(
+            'Statistik',
+            'Statistik Kompetisi',
+            'Top Scorer dan MVP Ranking dihitung sepenuhnya oleh backend.',
+            'chart-no-axes-column-increasing'
+          ) +
+          Phase9FComponents.summary(
+            State.statisticsTab,
+            State.publicData.topScorers,
+            State.publicData.mvpRanking
+          ) +
+          Phase9FComponents.content(
+            State.statisticsTab,
+            State.publicData.topScorers,
+            State.publicData.mvpRanking
+          )
+        );
+      },
+
+      statisticsError: function(message) {
+        return (
+          Components.pageHeader(
+            'Statistik',
+            'Statistik Kompetisi',
+            'Top Scorer dan MVP Ranking dihitung sepenuhnya oleh backend.',
+            'chart-no-axes-column-increasing'
+          ) +
           Components.emptyState(
-            'Statistik disiapkan pada Phase 9F',
-            'Frontend tidak akan menghitung atau mengubah ranking dari backend.',
-            'chart-column'
+            'Statistik gagal dimuat',
+            message,
+            'cloud-off'
           )
         );
       },
 
       login: function() {
         return (
-          Components.pageHeader(
-            'Akses Internal',
-            'Login Runner dan Admin',
-            'Halaman login internal akan diimplementasikan pada Phase 10.',
-            'lock-keyhole'
-          ) +
-          Components.emptyState(
-            'Login internal belum diaktifkan',
-            'Frontend publik tetap dapat digunakan tanpa login.',
-            'shield-check'
-          )
+          '<div class="mx-auto max-w-md route-enter">' +
+            '<a href="#/home" class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl px-2 font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-white">' +
+              '<i data-lucide="arrow-left" class="h-5 w-5"></i>' +
+              'Kembali ke website publik' +
+            '</a>' +
+            '<section class="public-card p-5 sm:p-7">' +
+              '<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">' +
+                '<i data-lucide="lock-keyhole" class="h-6 w-6"></i>' +
+              '</span>' +
+              '<h1 class="mt-5 text-2xl font-black text-white">' +
+                'Login Internal' +
+              '</h1>' +
+              '<p class="mt-2 text-sm leading-6 text-slate-400">' +
+                'Masukkan password Runner, Admin, atau Superadmin. Role akan ditentukan otomatis oleh backend.' +
+              '</p>' +
+              '<form id="internalLoginForm" class="mt-6">' +
+                '<label for="internalLoginPassword" class="block text-sm font-bold text-slate-300">' +
+                  'Password' +
+                '</label>' +
+                '<div class="relative mt-2">' +
+                  '<input ' +
+                    'id="internalLoginPassword" ' +
+                    'name="password" ' +
+                    'type="password" ' +
+                    'autocomplete="current-password" ' +
+                    'required ' +
+                    'class="min-h-12 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 pr-12 text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" ' +
+                    'placeholder="Masukkan password"' +
+                  '>' +
+                  '<button ' +
+                    'id="internalPasswordToggle" ' +
+                    'type="button" ' +
+                    'class="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-800 hover:text-white" ' +
+                    'aria-label="Tampilkan password"' +
+                  '>' +
+                    '<i data-lucide="eye" class="password-toggle-icon h-5 w-5"></i>' +
+                  '</button>' +
+                '</div>' +
+                '<p id="internalLoginError" class="mt-3 hidden rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert"></p>' +
+                '<button ' +
+                  'id="internalLoginButton" ' +
+                  'type="submit" ' +
+                  'class="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 font-bold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"' +
+                '>' +
+                  '<i data-lucide="log-in" class="button-icon h-5 w-5"></i>' +
+                  '<span class="button-label">Login</span>' +
+                '</button>' +
+              '</form>' +
+              '<div class="mt-5 border-t border-slate-800 pt-5">' +
+                '<p class="flex items-start gap-2 text-xs leading-5 text-slate-500">' +
+                  '<i data-lucide="shield-check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-400"></i>' +
+                  'Password tidak disimpan di browser. Browser hanya menyimpan session token dan role sampai tab ditutup.' +
+                '</p>' +
+              '</div>' +
+            '</section>' +
+          '</div>'
         );
       },
 
@@ -2618,6 +4081,409 @@
       }
     };
 
+    const InternalViews = {
+      navigationItems: function(role) {
+        const normalizedRole = String(role || '').toUpperCase();
+        const items = [
+          {
+            route: 'runner',
+            href: '#/runner',
+            label: 'Runner',
+            icon: 'clipboard-pen-line',
+            roles: ['RUNNER', 'ADMIN', 'SUPERADMIN']
+          },
+          {
+            route: 'admin',
+            href: '#/admin',
+            label: 'Admin',
+            icon: 'layout-dashboard',
+            roles: ['ADMIN', 'SUPERADMIN']
+          },
+          {
+            route: 'superadmin',
+            href: '#/superadmin',
+            label: 'Superadmin',
+            icon: 'shield-check',
+            roles: ['SUPERADMIN']
+          }
+        ];
+
+        return items.filter(function(item) {
+          return item.roles.indexOf(normalizedRole) !== -1;
+        });
+      },
+
+      navigation: function(role) {
+        return InternalViews.navigationItems(role).map(function(item) {
+          const active = State.route === item.route;
+
+          return (
+            '<a href="' +
+              item.href +
+              '" data-internal-route="' +
+              item.route +
+              '" class="flex min-h-12 items-center gap-3 rounded-xl px-3 font-semibold transition ' +
+              (
+                active
+                  ? 'bg-emerald-500/10 text-emerald-300'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+              ) +
+            '">' +
+              '<i data-lucide="' +
+                item.icon +
+                '" class="h-5 w-5"></i>' +
+              Utils.escapeHtml(item.label) +
+            '</a>'
+          );
+        }).join('');
+      },
+
+      dashboardSkeleton: function() {
+        return (
+          '<div class="route-enter">' +
+            '<div class="skeleton h-5 w-32 rounded"></div>' +
+            '<div class="skeleton mt-4 h-9 w-64 max-w-full rounded"></div>' +
+            '<div class="skeleton mt-3 h-4 w-full max-w-xl rounded"></div>' +
+            '<div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">' +
+              [1, 2, 3].map(function() {
+                return (
+                  '<div class="public-card p-5">' +
+                    '<div class="skeleton h-10 w-10 rounded-xl"></div>' +
+                    '<div class="skeleton mt-5 h-6 w-2/3 rounded"></div>' +
+                    '<div class="skeleton mt-3 h-4 w-full rounded"></div>' +
+                  '</div>'
+                );
+              }).join('') +
+            '</div>' +
+          '</div>'
+        );
+      },
+
+      foundationDashboard: function(role) {
+        const normalizedRole = String(role || '').toUpperCase();
+        const roleLabel = Utils.getRoleLabel(normalizedRole);
+        const descriptions = {
+          RUNNER:
+            'Fondasi internal siap. Dashboard pertandingan Runner akan dilanjutkan pada Phase 10B.',
+          ADMIN:
+            'Fondasi internal siap. Dashboard Admin akan dilanjutkan pada Phase 10G.',
+          SUPERADMIN:
+            'Fondasi internal siap. Fitur Superadmin akan dilanjutkan pada Phase 10O–10Q.'
+        };
+        const icons = {
+          RUNNER: 'clipboard-pen-line',
+          ADMIN: 'layout-dashboard',
+          SUPERADMIN: 'shield-check'
+        };
+
+        return (
+          '<div class="route-enter">' +
+            '<div class="inline-flex items-center gap-2 text-sm font-bold text-emerald-400">' +
+              '<i data-lucide="' +
+                (icons[normalizedRole] || 'shield') +
+                '" class="h-5 w-5"></i>' +
+              'Phase 10A' +
+            '</div>' +
+            '<h1 class="mt-3 text-3xl font-black tracking-tight text-white">' +
+              'Dashboard ' + Utils.escapeHtml(roleLabel) +
+            '</h1>' +
+            '<p class="mt-3 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">' +
+              Utils.escapeHtml(
+                descriptions[normalizedRole] ||
+                'Fondasi area internal siap digunakan.'
+              ) +
+            '</p>' +
+            '<section class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">' +
+              '<article class="public-card p-5">' +
+                '<span class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">' +
+                  '<i data-lucide="badge-check" class="h-5 w-5"></i>' +
+                '</span>' +
+                '<h2 class="mt-5 font-black text-white">Role Terverifikasi</h2>' +
+                '<p class="mt-2 text-sm leading-6 text-slate-400">' +
+                  'Backend mengenali session ini sebagai ' +
+                  Utils.escapeHtml(roleLabel) +
+                  '.' +
+                '</p>' +
+              '</article>' +
+              '<article class="public-card p-5">' +
+                '<span class="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400">' +
+                  '<i data-lucide="timer" class="h-5 w-5"></i>' +
+                '</span>' +
+                '<h2 class="mt-5 font-black text-white">Session Aktif</h2>' +
+                '<p class="mt-2 text-sm leading-6 text-slate-400">' +
+                  (
+                    State.sessionExpiresAt
+                      ? 'Berlaku sampai ' +
+                        Utils.escapeHtml(
+                          Utils.formatDateTime(State.sessionExpiresAt)
+                        ) +
+                        '.'
+                      : 'Session berhasil divalidasi oleh backend.'
+                  ) +
+                '</p>' +
+              '</article>' +
+              '<article class="public-card p-5 sm:col-span-2 lg:col-span-1">' +
+                '<span class="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">' +
+                  '<i data-lucide="key-round" class="h-5 w-5"></i>' +
+                '</span>' +
+                '<h2 class="mt-5 font-black text-white">Authorization Aktif</h2>' +
+                '<p class="mt-2 text-sm leading-6 text-slate-400">' +
+                  Utils.escapeHtml(State.permissions.length) +
+                  ' permission tersedia untuk session ini.' +
+                '</p>' +
+              '</article>' +
+            '</section>' +
+          '</div>'
+        );
+      }
+    };
+
+    const Auth = {
+      isInternalRoute: function(routeName) {
+        return (
+          routeName === 'runner' ||
+          routeName === 'admin' ||
+          routeName === 'superadmin'
+        );
+      },
+
+      canAccessRoute: function(routeName) {
+        const role = String(State.role || '').toUpperCase();
+
+        if (routeName === 'runner') {
+          return (
+            role === 'RUNNER' ||
+            role === 'ADMIN' ||
+            role === 'SUPERADMIN'
+          );
+        }
+
+        if (routeName === 'admin') {
+          return role === 'ADMIN' || role === 'SUPERADMIN';
+        }
+
+        if (routeName === 'superadmin') {
+          return role === 'SUPERADMIN';
+        }
+
+        return true;
+      },
+
+      saveSession: function(data) {
+        State.token = String(data.token || '');
+        State.role = String(data.role || '').toUpperCase();
+        State.sessionExpiresAt = String(data.expiresAt || '');
+        State.sessionValidated = true;
+
+        sessionStorage.setItem('ybm_session_token', State.token);
+        sessionStorage.setItem('ybm_session_role', State.role);
+        sessionStorage.setItem(
+          'ybm_session_expires_at',
+          State.sessionExpiresAt
+        );
+
+        UI.updateSessionStatus();
+      },
+
+      restoreSession: async function() {
+        if (!State.token || !State.role) {
+          Utils.clearSession();
+          return false;
+        }
+
+        if (State.loading.sessionValidation) {
+          return State.sessionValidated;
+        }
+
+        State.loading.sessionValidation = true;
+        State.errors.sessionValidation = '';
+
+        try {
+          const data = await API.post(
+            'validateSession',
+            {},
+            State.token
+          );
+
+          State.role = String(data.role || '').toUpperCase();
+          State.sessionExpiresAt = String(data.expiresAt || '');
+          State.permissions = Array.isArray(data.permissions)
+            ? data.permissions
+            : [];
+          State.sessionValidated = Boolean(data.authenticated);
+
+          sessionStorage.setItem('ybm_session_role', State.role);
+          sessionStorage.setItem(
+            'ybm_session_expires_at',
+            State.sessionExpiresAt
+          );
+
+          return State.sessionValidated;
+        } catch (error) {
+          State.errors.sessionValidation = error.message;
+          Utils.clearSession();
+
+          if (error.code !== 'SESSION_EXPIRED') {
+            UI.showToast(error.message, 'error');
+          }
+
+          return false;
+        } finally {
+          State.loading.sessionValidation = false;
+        }
+      },
+
+      login: async function(form) {
+        if (State.loading.authentication) {
+          return;
+        }
+
+        const passwordInput = form.querySelector(
+          '#internalLoginPassword'
+        );
+        const loginButton = form.querySelector(
+          '#internalLoginButton'
+        );
+        const errorElement = form.querySelector(
+          '#internalLoginError'
+        );
+        const password = String(passwordInput.value || '');
+
+        if (!password) {
+          errorElement.textContent = 'Password wajib diisi.';
+          errorElement.classList.remove('hidden');
+          passwordInput.focus();
+          return;
+        }
+
+        State.loading.authentication = true;
+        State.errors.authentication = '';
+        errorElement.classList.add('hidden');
+        form.setAttribute('aria-busy', 'true');
+        passwordInput.disabled = true;
+        UI.setButtonLoading(loginButton, true, 'Memvalidasi...');
+
+        try {
+          const data = await API.post('login', {
+            password: password
+          });
+
+          Auth.saveSession(data);
+
+          const validation = await API.post(
+            'validateSession',
+            {},
+            State.token
+          );
+
+          State.permissions = Array.isArray(validation.permissions)
+            ? validation.permissions
+            : [];
+          State.sessionValidated = Boolean(validation.authenticated);
+          form.reset();
+
+          UI.showToast(
+            'Login berhasil sebagai ' +
+              Utils.getRoleLabel(State.role) +
+              '.',
+            'success'
+          );
+
+          window.location.hash =
+            Utils.getRoleDashboardRoute(State.role);
+        } catch (error) {
+          Utils.clearSession();
+          State.errors.authentication = error.message;
+          errorElement.textContent = error.message;
+          errorElement.classList.remove('hidden');
+          passwordInput.disabled = false;
+          passwordInput.focus();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.authentication = false;
+          form.removeAttribute('aria-busy');
+
+          if (document.body.contains(loginButton)) {
+            UI.setButtonLoading(loginButton, false, '');
+          }
+
+          if (document.body.contains(passwordInput)) {
+            passwordInput.disabled = false;
+          }
+        }
+      },
+
+      requestLogout: function() {
+        UI.showConfirm(
+          'Keluar dari Dashboard?',
+          'Session internal pada perangkat ini akan dihapus.',
+          'Logout',
+          function() {
+            Auth.logout();
+          }
+        );
+      },
+
+      logout: async function() {
+        if (State.loading.logout) {
+          return;
+        }
+
+        State.loading.logout = true;
+        const token = State.token;
+        const logoutButtons = document.querySelectorAll(
+          '[data-internal-logout]'
+        );
+
+        logoutButtons.forEach(function(button) {
+          UI.setButtonLoading(button, true, 'Keluar...');
+        });
+
+        try {
+          if (token) {
+            await API.post('logout', {}, token);
+          }
+        } catch (error) {
+          if (error.code !== 'SESSION_EXPIRED') {
+            UI.showToast(
+              'Session lokal tetap akan dihapus.',
+              'error'
+            );
+          }
+        } finally {
+          Utils.clearSession();
+          State.loading.logout = false;
+          UI.closeModal();
+          window.location.hash = '#/login';
+          UI.showToast('Anda telah logout.', 'success');
+        }
+      },
+
+      handleProtectedError: function(error) {
+        if (
+          error &&
+          (
+            error.code === 'SESSION_EXPIRED' ||
+            error.code === 'ACCESS_DENIED'
+          )
+        ) {
+          Utils.clearSession();
+          window.location.hash = '#/login';
+
+          UI.showToast(
+            error.code === 'SESSION_EXPIRED'
+              ? 'Session telah berakhir. Silakan login kembali.'
+              : 'Anda tidak memiliki akses ke halaman tersebut.',
+            'error'
+          );
+
+          return true;
+        }
+
+        return false;
+      }
+    };
+
     const Router = {
       routes: {
         home: PublicViews.home,
@@ -2626,8 +4492,19 @@
         results: PublicViews.results,
         match: PublicViews.match,
         teams: PublicViews.teams,
+        team: PublicViews.team,
+        player: PublicViews.player,
         statistics: PublicViews.statistics,
-        login: PublicViews.login
+        login: PublicViews.login,
+        runner: function() {
+          return InternalViews.foundationDashboard('RUNNER');
+        },
+        admin: function() {
+          return InternalViews.foundationDashboard('ADMIN');
+        },
+        superadmin: function() {
+          return InternalViews.foundationDashboard('SUPERADMIN');
+        }
       },
 
       resolve: function() {
@@ -2641,9 +4518,44 @@
           segments: segments.slice(1)
         };
 
-        Elements.publicView.innerHTML = view(State.routeParams);
+        if (routeName === 'login' && State.sessionValidated) {
+          window.location.hash =
+            Utils.getRoleDashboardRoute(State.role);
+          return;
+        }
+
+        if (Auth.isInternalRoute(routeName)) {
+          if (
+            !State.token ||
+            !State.role ||
+            !State.sessionValidated
+          ) {
+            window.location.hash = '#/login';
+            return;
+          }
+
+          if (!Auth.canAccessRoute(routeName)) {
+            UI.showToast(
+              'Role ' +
+                Utils.getRoleLabel(State.role) +
+                ' tidak dapat membuka halaman tersebut.',
+              'error'
+            );
+            window.location.hash =
+              Utils.getRoleDashboardRoute(State.role);
+            return;
+          }
+
+          Router.showInternalLayout(routeName);
+          Elements.internalView.innerHTML = view(State.routeParams);
+        } else {
+          Router.showPublicLayout();
+          Elements.publicView.innerHTML = view(State.routeParams);
+        }
+
         Router.updateNavigation();
         Router.closeMobileNavigation();
+        Router.closeInternalMobileNavigation();
         window.scrollTo({
           top: 0,
           behavior: 'smooth'
@@ -2682,6 +4594,129 @@
           } else {
             PublicAPI.loadMatchDetail(matchId);
           }
+        } else if (
+          routeName === 'teams' &&
+          view === PublicViews.teams
+        ) {
+          PublicAPI.loadTeams();
+        } else if (
+          routeName === 'team' &&
+          view === PublicViews.team
+        ) {
+          const teamId = String(
+            State.routeParams.segments[0] || ''
+          ).trim().toUpperCase();
+
+          if (!/^T\d{3,}$/.test(teamId)) {
+            Elements.publicView.innerHTML =
+              PublicViews.teamError('Team ID pada URL tidak valid.');
+            lucide.createIcons();
+          } else {
+            PublicAPI.loadTeamDetail(teamId);
+          }
+        } else if (
+          routeName === 'player' &&
+          view === PublicViews.player
+        ) {
+          const playerId = String(
+            State.routeParams.segments[0] || ''
+          ).trim().toUpperCase();
+
+          if (!/^P\d{3,}$/.test(playerId)) {
+            Elements.publicView.innerHTML =
+              PublicViews.playerError(
+                'Player ID pada URL tidak valid.',
+                ''
+              );
+            lucide.createIcons();
+          } else {
+            PublicAPI.loadPlayerDetail(playerId);
+          }
+        } else if (
+          routeName === 'statistics' &&
+          view === PublicViews.statistics
+        ) {
+          PublicAPI.loadStatistics();
+        }
+      },
+
+      showPublicLayout: function() {
+        Elements.publicApp.classList.remove('hidden');
+        Elements.internalApp.classList.add('hidden');
+      },
+
+      showInternalLayout: function(routeName) {
+        const roleLabel = Utils.getRoleLabel(State.role);
+        const navigation = InternalViews.navigation(State.role);
+        const titles = {
+          runner: 'Dashboard Runner',
+          admin: 'Dashboard Admin',
+          superadmin: 'Dashboard Superadmin'
+        };
+
+        Elements.publicApp.classList.add('hidden');
+        Elements.internalApp.classList.remove('hidden');
+        Elements.internalSidebarRole.textContent = roleLabel;
+        Elements.internalHeaderRole.textContent =
+          'Login sebagai ' + roleLabel;
+        Elements.internalPageTitle.textContent =
+          titles[routeName] || 'Dashboard Internal';
+        Elements.internalSessionBadge.textContent =
+          roleLabel + ' · Session aktif';
+        Elements.internalDesktopNavigation.innerHTML = navigation;
+        Elements.internalMobileNavigation.innerHTML =
+          navigation +
+          '<div class="mt-3 border-t border-slate-800 pt-3">' +
+            '<a href="#/home" class="flex min-h-12 items-center gap-3 rounded-xl px-3 font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white">' +
+              '<i data-lucide="globe-2" class="h-5 w-5"></i>' +
+              'Website Publik' +
+            '</a>' +
+            '<button type="button" data-internal-logout class="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60">' +
+              '<i data-lucide="log-out" class="button-icon h-5 w-5"></i>' +
+              '<span class="button-label">Logout</span>' +
+            '</button>' +
+          '</div>';
+      },
+
+      toggleInternalMobileNavigation: function() {
+        State.internalMobileMenuOpen =
+          !State.internalMobileMenuOpen;
+
+        Elements.internalMobileNavigation.classList.toggle(
+          'hidden',
+          !State.internalMobileMenuOpen
+        );
+        Elements.internalMobileMenuButton.setAttribute(
+          'aria-expanded',
+          String(State.internalMobileMenuOpen)
+        );
+
+        const icon = Elements.internalMobileMenuButton.querySelector(
+          '.internal-mobile-menu-icon'
+        );
+
+        icon.setAttribute(
+          'data-lucide',
+          State.internalMobileMenuOpen ? 'x' : 'menu'
+        );
+
+        lucide.createIcons();
+      },
+
+      closeInternalMobileNavigation: function() {
+        State.internalMobileMenuOpen = false;
+        Elements.internalMobileNavigation.classList.add('hidden');
+        Elements.internalMobileMenuButton.setAttribute(
+          'aria-expanded',
+          'false'
+        );
+
+        const icon = Elements.internalMobileMenuButton.querySelector(
+          '.internal-mobile-menu-icon'
+        );
+
+        if (icon) {
+          icon.setAttribute('data-lucide', 'menu');
         }
       },
 
@@ -2802,6 +4837,10 @@
       },
 
       loadStandings: async function() {
+        if (State.loading.route) {
+          return;
+        }
+
         State.loading.route = true;
         State.errors.route = '';
 
@@ -2835,6 +4874,10 @@
       },
 
       loadSchedule: async function() {
+        if (State.loading.route) {
+          return;
+        }
+
         State.loading.route = true;
         State.errors.route = '';
 
@@ -2868,6 +4911,10 @@
       },
 
       loadResults: async function() {
+        if (State.loading.route) {
+          return;
+        }
+
         State.loading.route = true;
         State.errors.route = '';
 
@@ -2901,6 +4948,10 @@
       },
 
       loadMatchDetail: async function(matchId) {
+        if (State.loading.route) {
+          return;
+        }
+
         State.loading.route = true;
         State.errors.route = '';
 
@@ -2943,6 +4994,208 @@
 
           Elements.publicView.innerHTML =
             PublicViews.matchError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadTeams: async function() {
+        if (State.loading.route) {
+          return;
+        }
+
+        State.loading.route = true;
+        State.errors.route = '';
+
+        try {
+          const data = await API.post('getTeams', {});
+          const teams = Array.isArray(data) ? data : [];
+
+          State.publicData.teams = teams;
+
+          if (State.route !== 'teams') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderTeamsData(teams);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'teams') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.teamsError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadTeamDetail: async function(teamId) {
+        if (State.loading.route) {
+          return;
+        }
+
+        State.loading.route = true;
+        State.errors.route = '';
+
+        Elements.publicView.innerHTML =
+          Phase9EComponents.detailSkeleton();
+        lucide.createIcons();
+
+        try {
+          let data = State.publicData.teamDetails[teamId];
+
+          if (!data) {
+            data = await API.post('getTeamDetail', {
+              team_id: teamId
+            });
+
+            State.publicData.teamDetails[teamId] = data;
+          }
+
+          if (
+            State.route !== 'team' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              teamId
+          ) {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderTeamData(data);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (
+            State.route !== 'team' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              teamId
+          ) {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.teamError(error.message);
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadPlayerDetail: async function(playerId) {
+        if (State.loading.route) {
+          return;
+        }
+
+        State.loading.route = true;
+        State.errors.route = '';
+
+        Elements.publicView.innerHTML =
+          Phase9EComponents.playerDetailSkeleton();
+        lucide.createIcons();
+
+        try {
+          let data = State.publicData.playerDetails[playerId];
+
+          if (!data) {
+            data = await API.post('getPlayerDetail', {
+              player_id: playerId
+            });
+
+            State.publicData.playerDetails[playerId] = data;
+          }
+
+          if (
+            State.route !== 'player' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              playerId
+          ) {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderPlayerData(data);
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (
+            State.route !== 'player' ||
+            String(State.routeParams.segments[0] || '').toUpperCase() !==
+              playerId
+          ) {
+            return;
+          }
+
+          const cachedData = State.publicData.playerDetails[playerId] || {};
+          const cachedPlayer = cachedData.player || {};
+
+          Elements.publicView.innerHTML =
+            PublicViews.playerError(
+              error.message,
+              cachedPlayer.team_id || ''
+            );
+          lucide.createIcons();
+          UI.showToast(error.message, 'error');
+        } finally {
+          State.loading.route = false;
+        }
+      },
+
+      loadStatistics: async function() {
+        if (State.loading.route) {
+          return;
+        }
+
+        State.loading.route = true;
+        State.errors.route = '';
+
+        Elements.publicView.innerHTML =
+          PublicViews.statistics();
+        lucide.createIcons();
+
+        try {
+          const results = await Promise.all([
+            API.post('getTopScorers', {}),
+            API.post('getMvpRanking', {})
+          ]);
+
+          const topScorers = Array.isArray(results[0])
+            ? results[0]
+            : [];
+          const mvpRanking = Array.isArray(results[1])
+            ? results[1]
+            : [];
+
+          State.publicData.topScorers = topScorers;
+          State.publicData.mvpRanking = mvpRanking;
+
+          if (State.route !== 'statistics') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderStatisticsData();
+          lucide.createIcons();
+        } catch (error) {
+          State.errors.route = error.message;
+
+          if (State.route !== 'statistics') {
+            return;
+          }
+
+          Elements.publicView.innerHTML =
+            PublicViews.statisticsError(error.message);
           lucide.createIcons();
           UI.showToast(error.message, 'error');
         } finally {
@@ -3357,11 +5610,67 @@
       Router.toggleMobileNavigation();
     });
 
+    Elements.internalMobileMenuButton.addEventListener(
+      'click',
+      function() {
+        Router.toggleInternalMobileNavigation();
+      }
+    );
+
+    Elements.internalApp.addEventListener('click', function(event) {
+      const logoutButton = event.target.closest(
+        '[data-internal-logout]'
+      );
+      const internalRouteLink = event.target.closest(
+        '[data-internal-route]'
+      );
+
+      if (logoutButton) {
+        Auth.requestLogout();
+      }
+
+      if (internalRouteLink) {
+        Router.closeInternalMobileNavigation();
+      }
+    });
+
     Elements.publicView.addEventListener('click', function(event) {
       const retryButton = event.target.closest('#homeRetryButton');
+      const passwordToggle = event.target.closest(
+        '#internalPasswordToggle'
+      );
       const scheduleFilterButton = event.target.closest(
         '[data-schedule-filter]'
       );
+      const statisticsTabButton = event.target.closest(
+        '[data-statistics-tab]'
+      );
+
+      if (passwordToggle) {
+        const passwordInput = document.getElementById(
+          'internalLoginPassword'
+        );
+        const icon = passwordToggle.querySelector(
+          '.password-toggle-icon'
+        );
+        const passwordVisible = passwordInput.type === 'text';
+
+        passwordInput.type = passwordVisible
+          ? 'password'
+          : 'text';
+        passwordToggle.setAttribute(
+          'aria-label',
+          passwordVisible
+            ? 'Tampilkan password'
+            : 'Sembunyikan password'
+        );
+        icon.setAttribute(
+          'data-lucide',
+          passwordVisible ? 'eye' : 'eye-off'
+        );
+        lucide.createIcons();
+        passwordInput.focus();
+      }
 
       if (retryButton) {
         PublicAPI.loadHome(retryButton);
@@ -3376,6 +5685,34 @@
           PublicViews.renderScheduleData(State.publicData.schedule);
         lucide.createIcons();
       }
+
+      if (statisticsTabButton && State.route === 'statistics') {
+        const requestedTab = String(
+          statisticsTabButton.dataset.statisticsTab || 'TOP_SCORER'
+        );
+
+        if (
+          requestedTab === 'TOP_SCORER' ||
+          requestedTab === 'MVP_RANKING'
+        ) {
+          State.statisticsTab = requestedTab;
+
+          Elements.publicView.innerHTML =
+            PublicViews.renderStatisticsData();
+          lucide.createIcons();
+        }
+      }
+    });
+
+    Elements.publicView.addEventListener('submit', function(event) {
+      const loginForm = event.target.closest('#internalLoginForm');
+
+      if (!loginForm) {
+        return;
+      }
+
+      event.preventDefault();
+      Auth.login(loginForm);
     });
 
     Elements.apiStatusButton.addEventListener('click', function() {
@@ -3391,6 +5728,14 @@
     });
 
     Elements.globalModalActionButton.addEventListener('click', function() {
+      const callback = UI.modalConfirmCallback;
+
+      if (typeof callback === 'function') {
+        UI.modalConfirmCallback = null;
+        callback();
+        return;
+      }
+
       UI.closeModal();
     });
 
@@ -3407,13 +5752,64 @@
       ) {
         UI.closeModal();
       }
+
+      if (
+        event.key === 'Tab' &&
+        !Elements.globalModal.classList.contains('hidden')
+      ) {
+        const focusableElements = Elements.globalModal.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement =
+          focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        } else if (
+          !event.shiftKey &&
+          document.activeElement === lastElement
+        ) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
     });
+
+    document.addEventListener(
+      'error',
+      function(event) {
+        const target = event.target;
+
+        if (target && target.tagName === 'IMG') {
+          Utils.handleImageError(target);
+        }
+      },
+      true
+    );
 
     window.addEventListener('hashchange', function() {
       Router.resolve();
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('offline', function() {
+      UI.updateApiStatus('offline');
+      UI.showToast(
+        'Koneksi internet terputus. Data yang belum dimuat tidak dapat dibuka.',
+        'error'
+      );
+    });
+
+    window.addEventListener('online', function() {
+      UI.updateApiStatus('idle');
+      UI.showToast(
+        'Koneksi internet kembali tersedia.',
+        'success'
+      );
+    });
+
+    document.addEventListener('DOMContentLoaded', async function() {
       if (!window.location.hash) {
         window.location.replace('#/home');
       }
@@ -3421,6 +5817,21 @@
       lucide.createIcons();
       UI.updateSessionStatus();
       UI.updateApiStatus('idle');
+
+      if (State.token && State.role) {
+        Elements.publicView.innerHTML =
+          Components.pageHeader(
+            'Akses Internal',
+            'Memvalidasi Session',
+            'Mohon tunggu sementara session internal diperiksa.',
+            'shield-check'
+          ) +
+          Components.skeletonGrid();
+        lucide.createIcons();
+
+        await Auth.restoreSession();
+      }
+
       Router.resolve();
     });
   </script>
