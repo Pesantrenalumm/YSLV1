@@ -8595,9 +8595,20 @@
             '<div class="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">' +
               '<div class="min-w-0 text-right">' +
                 '<p class="truncate text-lg font-black text-white sm:text-2xl">' +
-                  Utils.escapeHtml(match.home_team_id || 'Home') +
+                  Utils.escapeHtml(
+                    match.home_team_short_name ||
+                    match.home_team_name ||
+                    match.home_team_id ||
+                    'Home'
+                  ) +
                 '</p>' +
-                '<p class="mt-1 text-xs text-slate-500">Home Team</p>' +
+                '<p class="mt-1 truncate text-xs text-slate-500">' +
+                  Utils.escapeHtml(
+                    match.home_team_name ||
+                    match.home_team_id ||
+                    'Home Team'
+                  ) +
+                '</p>' +
               '</div>' +
               '<div class="flex items-center gap-2 text-3xl font-black text-white sm:text-4xl">' +
                 '<span>' +
@@ -8618,9 +8629,20 @@
               '</div>' +
               '<div class="min-w-0">' +
                 '<p class="truncate text-lg font-black text-white sm:text-2xl">' +
-                  Utils.escapeHtml(match.away_team_id || 'Away') +
+                  Utils.escapeHtml(
+                    match.away_team_short_name ||
+                    match.away_team_name ||
+                    match.away_team_id ||
+                    'Away'
+                  ) +
                 '</p>' +
-                '<p class="mt-1 text-xs text-slate-500">Away Team</p>' +
+                '<p class="mt-1 truncate text-xs text-slate-500">' +
+                  Utils.escapeHtml(
+                    match.away_team_name ||
+                    match.away_team_id ||
+                    'Away Team'
+                  ) +
+                '</p>' +
               '</div>' +
             '</div>' +
             AdminViews.matchMeta(match) +
