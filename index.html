@@ -2404,6 +2404,13 @@
     const Config = {
       SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyLg1mJXfBxGD6YLbmTcQWeX_xdBEjEyp7zsyG_PjikgjRb9Vl6qZrR4OyXiK5KeXYTSw/exec',
       REQUEST_TIMEOUT_MS: 15000,
+      LONG_REQUEST_TIMEOUT_MS: 120000,
+      LONG_REQUEST_ACTIONS: [
+        'refreshPublicCache',
+        'runIntegrationTests',
+        'runDummyCompetitionSimulation',
+        'runProductionReadiness'
+      ],
       PUBLIC_READ_RETRY_COUNT: 1,
       PUBLIC_READ_RETRY_DELAY_MS: 700
     };
@@ -2754,9 +2761,13 @@
         }
 
         const controller = new AbortController();
+        const requestTimeout =
+          Config.LONG_REQUEST_ACTIONS.indexOf(action) !== -1
+            ? Config.LONG_REQUEST_TIMEOUT_MS
+            : Config.REQUEST_TIMEOUT_MS;
         const timeoutId = window.setTimeout(function() {
           controller.abort();
-        }, Config.REQUEST_TIMEOUT_MS);
+        }, requestTimeout);
 
         let response;
 
@@ -16023,23 +16034,19 @@
           UI.setButtonLoading(button, true, 'Keluar...');
         });
 
-        try {
-          if (token) {
-            await API.post('logout', {}, token);
-          }
-        } catch (error) {
-          if (error.code !== 'SESSION_EXPIRED') {
-            UI.showToast(
-              'Session lokal tetap akan dihapus.',
-              'error'
+        Utils.clearSession();
+        State.loading.logout = false;
+        UI.closeModal();
+        window.location.hash = '#/login';
+        UI.showToast('Anda telah logout.', 'success');
+
+        if (token) {
+          API.post('logout', {}, token).catch(function(error) {
+            console.warn(
+              'Session backend tidak dapat langsung dihapus:',
+              error.message
             );
-          }
-        } finally {
-          Utils.clearSession();
-          State.loading.logout = false;
-          UI.closeModal();
-          window.location.hash = '#/login';
-          UI.showToast('Anda telah logout.', 'success');
+          });
         }
       },
 
