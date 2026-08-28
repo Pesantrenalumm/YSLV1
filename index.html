@@ -2591,6 +2591,8 @@
           max_performance: 15,
           max_adab: 15,
           max_motivator: 15,
+          max_motivator: 15,
+          max_discipline: 35,
           no_card_score: 15,
           yellow_1_score: 10,
           yellow_2_score: 5,
@@ -11452,6 +11454,9 @@
             max_motivator: Number(
               settings.max_motivator || 0
             ),
+            max_discipline: Number(
+              settings.max_discipline || 35
+            ),
             no_card_score: Number(settings.no_card_score || 0),
             yellow_1_score: Number(
               settings.yellow_1_score || 0
@@ -11564,6 +11569,10 @@
           max_motivator: numberValue(
             'settingMaxMotivator',
             'Max Motivator'
+          ),
+          max_discipline: numberValue(
+            'settingMaxDiscipline',
+            'Max Discipline'
           ),
           no_card_score: numberValue(
             'settingNoCardScore',
@@ -15306,9 +15315,9 @@
                 '<h1 class="mt-3 text-3xl font-black text-white">' +
                   'Competition Settings' +
                 '</h1>' +
-                '<p class="mt-3 max-w-2xl text-sm leading-7 text-slate-400">' +
-                  'Kelola identitas kompetisi, aturan poin, rating, kartu, dan formula MVP. Perubahan akan membangun ulang statistik dan Public Snapshot.' +
-                '</p>' +
+                  '<p class="mt-3 max-w-2xl text-sm leading-7 text-slate-400">' +
+                    'Kelola identitas kompetisi, aturan poin, rating, disiplin, dan formula MVP. Nilai disiplin diinput manual oleh panitia. Perubahan akan membangun ulang statistik dan Public Snapshot.' +
+                  '</p>' +
               '</div>' +
               '<button type="button" data-superadmin-settings-refresh class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">' +
                 '<i data-lucide="refresh-cw" class="button-icon h-4 w-4"></i>' +
@@ -15377,10 +15386,10 @@
                 '<section class="public-card p-5 sm:p-6">' +
                   SuperadminSettingsViews.sectionHeader(
                     'Player Rating Limits',
-                    'Nilai maksimum setiap komponen rating pemain.',
+                    'Nilai maksimum setiap komponen penilaian pemain.',
                     'star'
                   ) +
-                  '<div class="mt-6 grid gap-5 sm:grid-cols-3">' +
+                  '<div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">' +
                     SuperadminSettingsViews.numberField(
                       'settingMaxPerformance',
                       'Max Performance',
@@ -15395,7 +15404,7 @@
                       'Max Adab',
                       data.max_adab,
                       0,
-                      15,
+                      100,
                       1,
                       ''
                     ) +
@@ -15404,55 +15413,27 @@
                       'Max Motivator',
                       data.max_motivator,
                       0,
-                      15,
+                      100,
                       1,
                       ''
+                    ) +
+                    SuperadminSettingsViews.numberField(
+                      'settingMaxDiscipline',
+                      'Max Discipline',
+                      data.max_discipline,
+                      0,
+                      100,
+                      1,
+                      'Nilai disiplin diinput manual oleh panitia.'
                     ) +
                   '</div>' +
-                '</section>' +
-                '<section class="public-card p-5 sm:p-6">' +
-                  SuperadminSettingsViews.sectionHeader(
-                    'Card Score Rules',
-                    'Skor kartu harus menurun dari tanpa kartu hingga kartu merah.',
-                    'badge-alert'
-                  ) +
-                  '<div class="mt-6 grid gap-5 sm:grid-cols-2">' +
-                    SuperadminSettingsViews.numberField(
-                      'settingNoCardScore',
-                      'No Card Score',
-                      data.no_card_score,
-                      0,
-                      100,
-                      1,
-                      ''
-                    ) +
-                    SuperadminSettingsViews.numberField(
-                      'settingYellow1Score',
-                      '1 Yellow Score',
-                      data.yellow_1_score,
-                      0,
-                      100,
-                      1,
-                      ''
-                    ) +
-                    SuperadminSettingsViews.numberField(
-                      'settingYellow2Score',
-                      '2 Yellow Score',
-                      data.yellow_2_score,
-                      0,
-                      100,
-                      1,
-                      ''
-                    ) +
-                    SuperadminSettingsViews.numberField(
-                      'settingRedScore',
-                      'Red Score',
-                      data.red_score,
-                      0,
-                      100,
-                      1,
-                      ''
-                    ) +
+                  '<div class="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">' +
+                    '<div class="flex items-start gap-3">' +
+                      '<i data-lucide="info" class="mt-0.5 h-5 w-5 shrink-0 text-amber-400"></i>' +
+                      '<p class="text-sm leading-6 text-amber-200">' +
+                        'Disiplin tidak dihitung dari kartu. Panitia memasukkan nilai disiplin secara manual sesuai aturan kompetisi.' +
+                      '</p>' +
+                    '</div>' +
                   '</div>' +
                 '</section>' +
                 '<section class="public-card p-5 sm:p-6 xl:col-span-2">' +
@@ -15496,7 +15477,7 @@
                 '<div class="flex items-start gap-3">' +
                   '<i data-lucide="triangle-alert" class="mt-0.5 h-5 w-5 shrink-0 text-amber-400"></i>' +
                   '<p class="text-sm leading-6 text-slate-400">' +
-                    'Menyimpan settings akan menghitung ulang seluruh derived statistics dari pertandingan PUBLISHED dan memperbarui Public Snapshot.' +
+                    'Menyimpan settings akan menghitung ulang seluruh derived statistics dari pertandingan PUBLISHED dan memperbarui Public Snapshot. Nilai disiplin tetap diinput manual oleh panitia.' +
                   '</p>' +
                 '</div>' +
                 '<button id="superadminSettingsSaveButton" type="submit" class="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 font-black text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">' +
