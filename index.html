@@ -2589,8 +2589,8 @@
           draw_points: 1,
           loss_points: 0,
           max_performance: 15,
-          max_adab: 35,
-          max_motivator: 35,
+          max_adab: 15,
+          max_motivator: 15,
           no_card_score: 15,
           yellow_1_score: 10,
           yellow_2_score: 5,
@@ -9022,7 +9022,7 @@
                     ? ''
                     : player.adab_score,
                   0,
-                  35,
+                  15,
                   !present
                 ) +
               '</label>' +
@@ -9035,7 +9035,7 @@
                     ? ''
                     : player.motivator_score,
                   0,
-                  35,
+                  15,
                   !present
                 ) +
               '</label>' +
@@ -10289,13 +10289,13 @@
                               player,
                               'adab_score',
                               'Adab',
-                              35
+                              15
                             ) +
                             RunnerViews.ratingControl(
                               player,
                               'motivator_score',
                               'Motivator',
-                              35
+                              15
                             ) +
                           '</div>' +
                           '<div class="mt-3 flex items-center justify-between rounded-xl bg-slate-900 px-4 py-3">' +
@@ -10630,10 +10630,10 @@
                 Number(player.performance_score) > 15 ||
                 player.adab_score === '' ||
                 Number(player.adab_score) < 0 ||
-                Number(player.adab_score) > 35 ||
+                Number(player.adab_score) > 15 ||
                 player.motivator_score === '' ||
                 Number(player.motivator_score) < 0 ||
-                Number(player.motivator_score) > 35
+                Number(player.motivator_score) > 15
               )
             );
           })[0];
@@ -13141,13 +13141,13 @@
             ),
             adab_score: AdminAPI.parseRating(
               adabInput.value,
-              35,
-              'Adab ' + playerName
-            ),
-            motivator_score: AdminAPI.parseRating(
-              motivatorInput.value,
-              35,
-              'Motivator ' + playerName
+                  15,
+                  'Adab ' + playerName
+                ),
+                motivator_score: AdminAPI.parseRating(
+                  motivatorInput.value,
+                  15,
+                  'Motivator ' + playerName
             )
           };
         });
@@ -15394,8 +15394,8 @@
                       'settingMaxAdab',
                       'Max Adab',
                       data.max_adab,
-                      1,
-                      100,
+                      0,
+                      15,
                       1,
                       ''
                     ) +
@@ -15403,8 +15403,8 @@
                       'settingMaxMotivator',
                       'Max Motivator',
                       data.max_motivator,
-                      1,
-                      100,
+                      0,
+                      15,
                       1,
                       ''
                     ) +
