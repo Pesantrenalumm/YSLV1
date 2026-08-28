@@ -15436,6 +15436,51 @@
                     '</div>' +
                   '</div>' +
                 '</section>' +
+                '<section class="public-card p-5 sm:p-6">' +
+                  SuperadminSettingsViews.sectionHeader(
+                    'Card Score Rules',
+                    'Nilai disiplin pemain berdasarkan jumlah kartu.',
+                    'badge-alert'
+                  ) +
+                  '<div class="mt-6 grid gap-5 sm:grid-cols-2">' +
+                    SuperadminSettingsViews.numberField(
+                      'settingNoCardScore',
+                      'No Card Score',
+                      data.no_card_score,
+                      0,
+                      100,
+                      1,
+                      'Nilai ketika pemain tidak menerima kartu.'
+                    ) +
+                    SuperadminSettingsViews.numberField(
+                      'settingYellow1Score',
+                      '1 Yellow Score',
+                      data.yellow_1_score,
+                      0,
+                      100,
+                      1,
+                      'Nilai ketika pemain menerima satu kartu kuning.'
+                    ) +
+                    SuperadminSettingsViews.numberField(
+                      'settingYellow2Score',
+                      '2 Yellow Score',
+                      data.yellow_2_score,
+                      0,
+                      100,
+                      1,
+                      'Nilai ketika pemain menerima dua kartu kuning.'
+                    ) +
+                    SuperadminSettingsViews.numberField(
+                      'settingRedScore',
+                      'Red Score',
+                      data.red_score,
+                      0,
+                      100,
+                      1,
+                      'Nilai ketika pemain menerima kartu merah.'
+                    ) +
+                  '</div>' +
+                '</section>' +
                 '<section class="public-card p-5 sm:p-6 xl:col-span-2">' +
                   SuperadminSettingsViews.sectionHeader(
                     'MVP Formula',
